@@ -1,0 +1,16 @@
+@import 'variables';
+@import 'others';
+@import 'themes';
+
+body {
+  font-family: $font-family-normal;
+}
+
+body {
+  background: var(--background);
+  color: var(--text-color);
+}
+
+i.icon {
+  font-family: "zing-mp3";
+}

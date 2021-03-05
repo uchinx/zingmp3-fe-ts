@@ -1,0 +1,24 @@
+@import "mixins/theme";
+
+:root {
+  @include schema-generator(
+    $primary: #7200a1,
+    $background: #fff,
+    $sidebar-bg: rgba(0, 0, 0, 0.05),
+    $alpha-bg: #ddd,
+    $highlight: #fff,
+    $text-color: #444,
+  );
+}
+
+[data-theme="dark"] {
+  @include schema-generator(
+    $primary: #7200a1,
+    $background: #282828,
+    $sidebar-bg: hsla(0,0%,100%,0.05),
+    $alpha-bg: #ddd,
+    $highlight: #fff,
+    $text-color: #a0a0a0,
+    $logo: 'dark',
+  );
+}

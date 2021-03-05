@@ -1,0 +1,508 @@
+@font-face {
+  font-family: 'mp3-zing';
+  src: url(../fonts/mp3-zing.eot);
+  src: url(../fonts/mp3-zing.eot) format('embedded-opentype'),
+    url(../fonts//mp3-zing.woff) format('woff'),
+    url(../fonts/mp3-zing.ttf) format('truetype'),
+    url(../fonts/mp3-zing.svg) format('svg');
+  font-weight: 400;
+  font-style: normal;
+}
+
+[data-icon]:before {
+  content: attr(data-icon);
+}
+
+[class*=' ic-']:before,
+[class^='ic-']:before,
+[data-icon]:before {
+  font-family: 'mp3-zing' !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-feature-settings: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ic-addfriend:before {
+  content: '\68';
+}
+
+.ic-album:before {
+  content: '\69';
+}
+
+.ic-artist:before {
+  content: '\6a';
+}
+
+.ic-attach:before {
+  content: '\6b';
+}
+
+.ic-beat:before {
+  content: '\6c';
+}
+
+.ic-beat-off:before {
+  content: '\6d';
+}
+
+.ic-close:before {
+  content: '\6f';
+}
+
+.ic-code:before {
+  content: '\70';
+}
+
+.ic-comment:before {
+  content: '\71';
+}
+
+.ic-copy-text:before {
+  content: '\72';
+}
+
+.ic-delete:before {
+  content: '\73';
+}
+
+.ic-denial:before {
+  content: '\74';
+}
+
+.ic-dislike:before {
+  content: '\75';
+}
+
+.ic-filter:before {
+  content: '\76';
+}
+
+.ic-font-size:before {
+  content: '\77';
+}
+
+.ic-go-down:before {
+  content: '\79';
+}
+
+.ic-go-left:before {
+  content: '\7a';
+}
+
+.ic-go-right:before {
+  content: '\41';
+}
+
+.ic-go-up:before {
+  content: '\42';
+}
+
+.ic-idea:before {
+  content: '\44';
+}
+
+.ic-info:before {
+  content: '\45';
+}
+
+.ic-karaoke:before {
+  content: '\46';
+}
+
+.ic-like-other:before {
+  content: '\47';
+}
+
+.ic-link:before {
+  content: '\48';
+}
+
+.ic-list-music:before {
+  content: '\49';
+}
+
+.ic-more:before {
+  content: '\4a';
+}
+
+.ic-mv-default:before {
+  content: '\4c';
+}
+
+.ic-mv-theater:before {
+  content: '\4d';
+}
+
+.ic-next:before {
+  content: '\4e';
+}
+
+.ic-noti:before {
+  content: '\50';
+}
+
+.ic-play-circle:before {
+  content: '\51';
+}
+
+.ic-play-next:before {
+  content: '\52';
+}
+
+.ic-play-no:before {
+  content: '\53';
+}
+
+.ic-play-outline:before {
+  content: '\55';
+}
+
+.ic-pre:before {
+  content: '\56';
+}
+
+.ic-remove:before {
+  content: '\58';
+}
+
+.ic-repeat:before {
+  content: '\59';
+}
+
+.ic-repeat-one:before {
+  content: '\5a';
+}
+
+.ic-restore:before {
+  content: '\30';
+}
+
+.ic-rollback:before {
+  content: '\31';
+}
+
+.ic-qc:before {
+  content: '\32';
+}
+
+.ic-edit:before {
+  content: '\33';
+}
+
+.ic-star-outline:before {
+  content: '\34';
+}
+
+.ic-tools:before {
+  content: '\36';
+}
+
+.ic-trend:before {
+  content: '\37';
+}
+
+.ic-unlike:before {
+  content: '\38';
+}
+
+.ic-up:before {
+  content: '\39';
+}
+
+.ic-upload:before {
+  content: '\21';
+}
+
+.ic-zm-collapse:before {
+  content: '\23';
+}
+
+.ic-zm-expand:before {
+  content: '\24';
+}
+
+.ic-camera:before {
+  content: '\63';
+}
+
+.ic-casting:before {
+  content: '\64';
+}
+
+.ic-check:before {
+  content: '\65';
+}
+
+.ic-down:before {
+  content: '\66';
+}
+
+.ic-download:before {
+  content: '\67';
+}
+
+.ic-drag:before {
+  content: '\26';
+}
+
+.ic-email:before {
+  content: '\27';
+}
+
+.ic-ringtone:before {
+  content: '\29';
+}
+
+.ic-history:before {
+  content: '\2a';
+}
+
+.ic-location:before {
+  content: '\2f';
+}
+
+.ic-log-out:before {
+  content: '\3a';
+}
+
+.ic-like:before {
+  content: '\3b';
+}
+
+.ic-like-full:before {
+  content: '\3c';
+}
+
+.ic-lyric:before {
+  content: '\3d';
+}
+
+.ic-pause-circle-outline:before {
+  content: '\3f';
+}
+
+.ic-pause:before {
+  content: '\40';
+}
+
+.ic-phone:before {
+  content: '\5b';
+}
+
+.ic-pin:before {
+  content: '\5d';
+}
+
+.ic-play:before {
+  content: '\5e';
+}
+
+.ic-play-circle-outline:before {
+  content: '\5f';
+}
+
+.ic-quality:before {
+  content: '\7c';
+}
+
+.ic-radio:before {
+  content: '\7d';
+}
+
+.ic-reload:before {
+  content: '\7e';
+}
+
+.ic-reset:before {
+  content: '\5c';
+}
+
+.ic-search:before {
+  content: '\e000';
+}
+
+.ic-settings:before {
+  content: '\e001';
+}
+
+.ic-shuffle:before {
+  content: '\e003';
+}
+
+.ic-song:before {
+  content: '\e004';
+}
+
+.ic-star:before {
+  content: '\e005';
+}
+
+.ic-user:before {
+  content: '\e006';
+}
+
+.ic-view:before {
+  content: '\e007';
+}
+
+.ic-visual:before {
+  content: '\e008';
+}
+
+.ic-volume:before {
+  content: '\e009';
+}
+
+.ic-volume-mute:before {
+  content: '\e00a';
+}
+
+.ic-warning:before {
+  content: '\e00b';
+}
+
+.ic-check-outline:before {
+  content: '\e00c';
+}
+
+.ic-check-full:before {
+  content: '\e00d';
+}
+
+.ic-add-que:before {
+  content: '\e00f';
+}
+
+.ic-add-play-now:before {
+  content: '\e010';
+}
+
+.ic-balance:before {
+  content: '\54';
+}
+
+.ic-mv:before {
+  content: '\4b';
+}
+
+.ic-back:before {
+  content: '\25';
+}
+
+.ic-forward:before {
+  content: '\22';
+}
+
+.ic-add:before {
+  content: '\62';
+}
+
+.ic-add-lyric:before {
+  content: '\6e';
+}
+
+.ic-calendar:before {
+  content: '\28';
+}
+
+.ic-brightness:before {
+  content: '\2d';
+}
+
+.ic-sort:before {
+  content: '\2e';
+}
+
+.ic-add-playlist:before {
+  content: '\60';
+}
+
+.ic-showbiz:before {
+  content: '\61';
+}
+
+.ic-privacy:before {
+  content: '\7b';
+}
+
+.ic-minimize:before {
+  content: '\e011';
+}
+
+.ic-mn-catalogue:before {
+  content: '\e013';
+}
+
+.ic-mn-mv:before {
+  content: '\4f';
+}
+
+.ic-mn-song:before {
+  content: '\3e';
+}
+
+.ic-mn-top100:before {
+  content: '\e014';
+}
+
+.ic-mn-zingchart:before {
+  content: '\e015';
+}
+
+.ic-add-trans:before {
+  content: '\43';
+}
+
+.ic-mn-artist:before {
+  content: '\e00e';
+}
+
+.ic-global:before {
+  content: '\78';
+}
+
+.ic-private:before {
+  content: '\57';
+}
+
+.ic-what-new:before {
+  content: '\2b';
+}
+
+.ic-rollback-v5:before {
+  content: '\e012';
+}
+
+.ic-podcast:before {
+  content: '\e016';
+}
+
+.ic-mn-home:before {
+  content: '\e017';
+}
+
+.ic-share:before {
+  content: '\2c';
+}
+
+.ic-floating:before {
+  content: '\e002';
+}
+
+.ic-clock:before {
+  content: '\35';
+}
+
+.ic-feed:before {
+  content: '\e018';
+}
+
+.ic-library:before {
+  content: '\e019';
+}
