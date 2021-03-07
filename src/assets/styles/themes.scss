@@ -1,4 +1,4 @@
-@import "mixins/theme";
+@import 'mixins/theme';
 
 :root {
   @include schema-generator(
@@ -7,18 +7,24 @@
     $sidebar-bg: rgba(0, 0, 0, 0.05),
     $alpha-bg: #ddd,
     $highlight: #fff,
-    $text-color: #444,
+    $text-primary: #444,
+    $text-secondary: #444,
+    $boder-color: rgba(0, 0, 0, 0.1),
+    $tab-active: #fff,
   );
 }
 
-[data-theme="dark"] {
+[data-theme='dark'] {
   @include schema-generator(
     $primary: #7200a1,
     $background: #282828,
-    $sidebar-bg: hsla(0,0%,100%,0.05),
-    $alpha-bg: #ddd,
+    $sidebar-bg: hsla(0, 0%, 100%, 0.05),
+    $alpha-bg: hsla(0, 0%, 100%, 0.1),
     $highlight: #fff,
-    $text-color: #a0a0a0,
-    $logo: 'dark',
+    $text-primary: #fff,
+    $text-secondary: hsla(0,0%,100%,0.5),
+    $boder-color: rgba(255, 255, 255, 0.1),
+    $tab-active: hsla(0,0%,100%,0.3),
+    $logo: 'dark'
   );
 }

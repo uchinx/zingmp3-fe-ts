@@ -39,11 +39,16 @@ $font-size: 24px;
       border-left-color: var(--primary) !important;
       background-color: var(--alpha-bg);
     }
+    &.is-active, &:hover {
+      a {
+        color: var(--text-primary);
+      }
+    }
   }
   a {
     display: flex;
     align-items: center;
-    color: var(--text-color);
+    color: var(--text-secondary);
     text-decoration: none;
     padding: 10px 25px;
     i {

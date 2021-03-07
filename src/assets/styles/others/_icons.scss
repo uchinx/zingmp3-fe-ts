@@ -27,6 +27,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon.ic-svg-vip-label {
+  background-image: url(https://zjs.zadn.vn/zmp3-desktop/releases/v1.0.25/static/media/vip-label.3dd6ac7e.svg);
+  width: 26px;
+  height: 12px;
+  display: inline-block;
+}
+
 .ic-addfriend:before {
   content: '\68';
 }

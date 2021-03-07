@@ -52,8 +52,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-$logo-height: 70px;
-
 .sidebar {
   display: inline-block;
   width: $sidebar-width;
@@ -64,7 +62,7 @@ $logo-height: 70px;
   left: 0;
   .top {
     padding: 0 25px 0 28px;
-    height: $logo-height;
+    height: $top-height;
     width: 100%;
     align-items: center;
     display: flex;
@@ -111,7 +109,7 @@ $logo-height: 70px;
     a {
       display: flex;
       padding: 0 25px;
-      color: var(--text-color);
+      color: var(--text-primary);
       font-weight: 700;
       align-items: center;
       text-decoration: none;

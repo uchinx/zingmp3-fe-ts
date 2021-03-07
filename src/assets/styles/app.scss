@@ -8,9 +8,37 @@ body {
 
 body {
   background: var(--background);
-  color: var(--text-color);
+  color: var(--text-primary);
 }
 
 i.icon {
   font-family: "zing-mp3";
+}
+
+.btn {
+  cursor: pointer;
+  text-align: center;
+  user-select: none;
+  outline: none;
+  border: none;
+  position: relative;
+  font-weight: 400;
+  text-transform: none;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-block;
+  padding: 5px;
+  &.rounded {
+    border-radius: 100%;
+  }
+  color: var(--text-secondary);
+  background: var(--alpha-bg);
+  &.is-active {
+    background: var(--primary) !important;
+    color: #fff;
+  }
+}
+
+.text-primary {
+  color: var(--primary);
 }

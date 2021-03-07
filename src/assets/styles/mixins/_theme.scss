@@ -1,13 +1,26 @@
-@mixin schema-generator($primary, $background, $sidebar-bg, $alpha-bg, $highlight, $text-color, $logo: "light") {
+@mixin schema-generator(
+  $primary,
+  $background,
+  $sidebar-bg,
+  $alpha-bg,
+  $highlight,
+  $text-primary,
+  $text-secondary,
+  $boder-color,
+  $tab-active,
+  $logo: 'light'
+) {
   #{--primary}: $primary;
   #{--alpha-bg}: $sidebar-bg;
   #{--background}: $background;
   #{--sidebar-bg}: $sidebar-bg;
   #{--highlight}: $highlight;
-  #{--text-color}: $text-color;
-  #{--border-color}: rgba(0,0,0,0.1);
-  
-  @if $logo == "dark" {
+  #{--text-primary}: $text-primary;
+  #{--text-secondary}: $text-secondary;
+  #{--border-color}: $boder-color;
+  #{--tab-active}: $tab-active;
+
+  @if $logo == 'dark' {
     #{--logo-url}: url('https://zmp3-static.zadn.vn/skins/zmp3-v6.1/images/backgrounds/logo-dark.svg');
   } @else {
     #{--logo-url}: url('https://zmp3-static.zadn.vn/skins/zmp3-v6.1/images/backgrounds/logo-light.svg');
