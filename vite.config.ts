@@ -10,5 +10,10 @@ export default defineConfig({
         additionalData: `@import "./src/assets/styles/variables";`
       }
     },
+  },
+  resolve: {
+    alias: {
+      '@/': '/src/'
+    }
   }
 })

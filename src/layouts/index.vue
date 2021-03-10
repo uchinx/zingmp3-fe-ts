@@ -7,7 +7,6 @@ export default {
 }
 </script>
 
-
 <template>
   <div class="default-layout">
     <sidebar-component/>
@@ -27,6 +26,6 @@ export default {
   width: calc(100% - 560px);
 }
 .wrapper {
-  padding: 30px;
+  padding: 20px 58px;
 }
 </style>

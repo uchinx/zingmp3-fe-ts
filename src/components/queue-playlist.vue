@@ -142,6 +142,9 @@ aside {
     &.is-active {
       background: var(--primary) !important;
       color: #fff;
+      .artists {
+        color: #ddd !important;
+      }
     }
     &:not(.is-active) .cover {
       position: absolute;
