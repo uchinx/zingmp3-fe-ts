@@ -15,7 +15,7 @@ export default {
     },
     index: {
       type: Number,
-      required: true,
+      default: 0
     },
     total: {
       type: Number,
@@ -63,41 +63,3 @@ export default {
     </a>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.item-wrapper {
-  width: 41.4%;
-  transition: .3s;
-  &:not(.hidden) {
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin: auto;
-    transform: translateX(0);
-  }
-  &.hidden {
-    visibility: hidden;
-  }
-  &.prev {
-    transform: translateX(-77%) scale(.85) !important;
-  }
-  &.next {
-    transform: translateX(77%) scale(.85) !important;
-  }
-  &.current {
-    z-index: 10;
-  }
-  &:not(.next):not(.prev):not(.current) {
-    opacity: 0;
-  }
-  transform: translateX(0);
-  height: auto;
-  .card {
-    display: inline-block;
-    .image > img {
-      width: 100%;
-      border-radius: 8px;
-    }
-  }
-}
-</style>

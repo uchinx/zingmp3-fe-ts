@@ -4,7 +4,7 @@ import { NavBar } from '../../types'
 export default {
   props: {
     items: {
-      type: [] as PropType<NavBar>,
+      type: Array as PropType<Array<NavBar>>,
     },
   },
 }

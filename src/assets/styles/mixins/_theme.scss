@@ -8,6 +8,7 @@
   $text-secondary,
   $boder-color,
   $tab-active,
+  $banner-home-dot,
   $logo: 'light'
 ) {
   #{--primary}: $primary;
@@ -19,6 +20,7 @@
   #{--text-secondary}: $text-secondary;
   #{--border-color}: $boder-color;
   #{--tab-active}: $tab-active;
+  #{--banner-home-dot}: $banner-home-dot;
 
   @if $logo == 'dark' {
     #{--logo-url}: url('https://zmp3-static.zadn.vn/skins/zmp3-v6.1/images/backgrounds/logo-dark.svg');
