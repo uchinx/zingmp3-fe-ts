@@ -1,9 +1,11 @@
 <script lang="ts">
+import { ref } from 'vue'
 import { NavBar } from '../../types'
-import NavMenu from './nav-menu.vue'
+import NavMenu from './sidebar-item.vue'
 export default {
   components: { NavMenu },
   setup() {
+    const isExpanded = ref(false)
     const nav1Items: NavBar[] = [
       { title: 'Cá Nhân', icon: 'ic-library', slug: '/mymusic' },
       { title: 'Khám Phá', icon: 'ic-mn-home', slug: '/', active: true },
@@ -16,16 +18,21 @@ export default {
       { title: 'Top 100', icon: 'ic-mn-top100', slug: '/zing-chart' },
       { title: 'MV', icon: 'ic-mn-mv', slug: '' },
     ]
+    function expandSidebar() {
+      isExpanded.value = !isExpanded.value
+    }
     return {
       nav1Items,
       nav2Items,
+      expandSidebar,
+      isExpanded
     }
   },
 }
 </script>
 
 <template>
-  <aside class="sidebar left">
+  <aside class="sidebar left" :class="{ 'is-expanded': isExpanded }">
     <div class="top">
       <router-link to="/">
         <div class="logo"></div>
@@ -47,14 +54,52 @@ export default {
           <span>Tạo playlist mới</span>
         </a>
       </div>
+
+      <div class="expand">
+        <button class="btn" @click="expandSidebar">
+          <i :class="isExpanded ? 'ic-go-left' : 'ic-go-right'"></i>
+        </button>
+      </div>
     </div>
   </aside>
 </template>
 
 <style lang="scss" scoped>
+.sidebar:not(.is-expanded) {
+  @include media('<medium') {
+    width: $sidebar-width-m !important;
+    .top {
+      padding: 0 13px;
+      .logo {
+        background-image: var(--logo-url-m) !important;
+        width: 45px !important;
+        height: 45px !important;
+      }
+    }
+    :deep(.nav) {
+      li {
+        border-left: unset !important;
+        &.is-active {
+          background-color: var(--alpha-bg);
+        }
+      }
+      a {
+        padding: 15px 23px;
+        span {
+          display: none;
+        }
+      }
+    }
+  }
+}
+.sidebar.is-expanded {
+  box-shadow: 0 2px 5px 0 rgb(0 0 0 / 30%);
+  z-index: 12;
+}
 .sidebar {
   display: inline-block;
   width: $sidebar-width;
+  transition: width 0.3s;
   height: 100vh;
   background: var(--sidebar-bg);
   position: fixed;
@@ -106,6 +151,9 @@ export default {
     display: flex;
     align-items: center;
     cursor: pointer;
+    @include media('<medium') {
+      display: none;
+    }
     a {
       display: flex;
       padding: 0 25px;
@@ -124,6 +172,18 @@ export default {
       span {
         flex: 1 1;
       }
+    }
+  }
+  .expand {
+    @include media('>medium') {
+      display: none;
+    }
+    float: right;
+    padding: 10px;
+    .btn {
+      background: var(--alpha-bg);
+      border-radius: 999px;
+      padding: 15px 18px;
     }
   }
 }

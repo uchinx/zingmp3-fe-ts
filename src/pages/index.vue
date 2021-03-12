@@ -1,12 +1,12 @@
 <script lang="ts">
 import SliderComponent from '@/components/slider/index.vue'
 export default {
-  components: { SliderComponent }
+  components: { SliderComponent },
 }
 </script>
 <template>
   <div>
-    <SliderComponent/>
+    <SliderComponent />
     Home Page
   </div>
 </template>

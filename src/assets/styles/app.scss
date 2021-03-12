@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'include-media';
 @import 'others';
 @import 'themes';
 
@@ -12,7 +13,7 @@ body {
 }
 
 i.icon {
-  font-family: "zing-mp3";
+  font-family: 'zing-mp3';
 }
 
 .btn {

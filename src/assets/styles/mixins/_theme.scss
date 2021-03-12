@@ -12,7 +12,7 @@
   $logo: 'light'
 ) {
   #{--primary}: $primary;
-  #{--alpha-bg}: $sidebar-bg;
+  #{--alpha-bg}: $alpha-bg;
   #{--background}: $background;
   #{--sidebar-bg}: $sidebar-bg;
   #{--highlight}: $highlight;
@@ -27,4 +27,6 @@
   } @else {
     #{--logo-url}: url('https://zmp3-static.zadn.vn/skins/zmp3-v6.1/images/backgrounds/logo-light.svg');
   }
+  #{--logo-url-m}: url('https://zjs.zadn.vn/zmp3-desktop/releases/v1.1.0/static/media/icon_zing_mp3_60.f6b51045.svg');
+
 }

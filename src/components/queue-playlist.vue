@@ -92,6 +92,10 @@ aside {
   position: fixed;
   border-left: 1px solid var(--border-color);
   background: var(--background);
+  transition: right .3s;
+  @include media('<large') {
+    right: -$queue-playlist-width !important;
+  }
   .header {
     width: 100%;
     height: $top-height;

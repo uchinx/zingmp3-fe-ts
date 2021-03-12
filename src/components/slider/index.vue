@@ -87,16 +87,20 @@ export default {
       v-for="index in sliders.length"
       :key="'nav' + index"
       class="nav-item"
-      :class="{ current: (index - 1) === currentIndex }"
+      :class="{ current: index - 1 === currentIndex }"
     ></div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 $cover-width: 41.4%;
+$cover-width-m: 70%;
 $not-current-cover-scale: 0.85;
 $left-cover-transform: translateX(-77%) scale($not-current-cover-scale);
 $right-cover-transform: translateX(77%) scale($not-current-cover-scale);
+
+$left-cover-transform-m: translateX(-25%) scale($not-current-cover-scale);
+$right-cover-transform-m: translateX(25%) scale($not-current-cover-scale);
 .wrapper {
   position: relative;
   user-select: none;
@@ -108,6 +112,9 @@ $right-cover-transform: translateX(77%) scale($not-current-cover-scale);
     right: 0;
     margin: auto;
     width: $cover-width;
+    @include media('<medium') {
+      width: $cover-width-m !important;
+    }
     height: 100%;
     z-index: 7;
     cursor: pointer;
@@ -140,6 +147,9 @@ $right-cover-transform: translateX(77%) scale($not-current-cover-scale);
     }
   }
   .next {
+    @include media('<medium') {
+      transform: $right-cover-transform-m !important;
+    }
     transform: $right-cover-transform;
     .carousel-ctrl {
       flex-direction: row-reverse;
@@ -147,10 +157,16 @@ $right-cover-transform: translateX(77%) scale($not-current-cover-scale);
   }
   .prev {
     transform: $left-cover-transform;
+    @include media('<medium') {
+      width: $cover-width-m !important;
+    }
   }
 
   :deep(.item-wrapper) {
     width: $cover-width;
+    @include media('<medium') {
+      width: $cover-width-m !important;
+    }
     transition: 0.7s;
     &:not(.hidden) {
       position: absolute;
@@ -164,10 +180,16 @@ $right-cover-transform: translateX(77%) scale($not-current-cover-scale);
       visibility: hidden;
     }
     &.prev {
+      @include media('<medium') {
+        transform: $left-cover-transform-m !important;
+      }
       transform: $left-cover-transform !important;
       z-index: 5;
     }
     &.next {
+      @include media('<medium') {
+        transform: $right-cover-transform-m !important;
+      }
       transform: $right-cover-transform !important;
       z-index: 5;
     }
@@ -198,11 +220,11 @@ $right-cover-transform: translateX(77%) scale($not-current-cover-scale);
     width: 6px;
     height: 6px;
     border-radius: 999px;
-    transition: all .5s ease-in-out;
+    transition: all 0.5s ease-in-out;
     background: var(--banner-home-dot);
     &.current {
       width: 24px;
-      background: linear-gradient(104deg,#3023ae,#c86dd7 102%);
+      background: linear-gradient(104deg, #3023ae, #c86dd7 102%);
     }
   }
 }

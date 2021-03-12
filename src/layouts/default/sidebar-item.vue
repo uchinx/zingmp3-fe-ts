@@ -39,7 +39,8 @@ $font-size: 24px;
       border-left-color: var(--primary) !important;
       background-color: var(--alpha-bg);
     }
-    &.is-active, &:hover {
+    &.is-active,
+    &:hover {
       a {
         color: var(--text-primary);
       }
