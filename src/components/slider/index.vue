@@ -220,7 +220,7 @@ $right-cover-transform-m: translateX(25%) scale($not-current-cover-scale);
     width: 6px;
     height: 6px;
     border-radius: 999px;
-    transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out .3s;
     background: var(--banner-home-dot);
     &.current {
       width: 24px;

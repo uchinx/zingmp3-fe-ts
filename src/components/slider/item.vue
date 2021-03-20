@@ -55,11 +55,11 @@ export default {
       next: isNext,
     }"
   >
-    <a class="card" :href="slider.link" :title="slider.title">
+    <router-link class="card" :to="slider.link" :title="slider.title">
       <div class="image">
         <img :src="slider.banner" alt="banner" />
       </div>
       <div class="content"></div>
-    </a>
+    </router-link>
   </div>
 </template>
