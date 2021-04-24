@@ -51,6 +51,10 @@ header {
   height: $top-height;
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 0;
+  background: var(--background);
+  z-index: 111;
   .navigation {
     .btn {
       background: transparent !important;

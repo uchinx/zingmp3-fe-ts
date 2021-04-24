@@ -3,5 +3,8 @@ export default {
   'playlist': 'Danh sách phát',
   'listen_recently': 'Nghe gần đây',
   'next_up': 'Tiếp theo',
-  'from_playlist': "Từ danh sách phát"
+  'from_playlist': 'Từ danh sách phát',
+  'updated_at': 'Cập nhật',
+  'lover': 'Người yêu thích',
+  "quote": "Lời tựa"
 }

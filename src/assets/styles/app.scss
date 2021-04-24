@@ -14,6 +14,7 @@ body {
 
 i.icon {
   font-family: 'zing-mp3';
+  display: flex;
 }
 
 .btn {
@@ -42,4 +43,7 @@ i.icon {
 
 .text-primary {
   color: var(--primary);
+}
+.text-secondary {
+  color: var(--text-secondary);
 }

@@ -38,7 +38,8 @@ export default {
   text-decoration: none;
   margin-top: 4px;
   display: inline-block;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
   &:hover {
     color: var(--primary);
   }
@@ -82,7 +83,7 @@ export default {
     height: 100%;
     z-index: 1111;
     .center {
-      line-height: 12;
+      line-height: 14;
       text-align: center;
       color: #fff;
       button {

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory, RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -6,6 +6,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('./layouts/index.vue'), // use default layout
     children: [
       { path: '/', component: () => import('./pages/index.vue') },
+      { path: '/album/:path/:id.html', component: () => import('./pages/album.vue') },
       {
         path: '/:path(.*)*',
         component: () => import('./pages/404.vue'),
@@ -15,6 +16,6 @@ const routes: RouteRecordRaw[] = [
 ]
 
 export default createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 })
