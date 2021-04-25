@@ -29,7 +29,7 @@ i.icon {
   font-size: 14px;
   line-height: 1;
   display: inline-block;
-  padding: 5px;
+  padding: 10px;
   &.rounded {
     border-radius: 100%;
   }
@@ -39,8 +39,22 @@ i.icon {
     background: var(--primary) !important;
     color: #fff;
   }
+  &.zing {
+    background: var(--primary) !important;
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 25px;
+    span {
+      line-height: 1.2;
+    }
+  }
 }
-
+.d-flex {
+  display: flex;
+}
+.d-inline-flex {
+  display: inline-flex !important;
+}
 .text-primary {
   color: var(--primary);
 }

@@ -12,6 +12,7 @@
     $boder-color: rgba(0, 0, 0, 0.1),
     $tab-active: #fff,
     $banner-home-dot: #727171,
+    $sticky-header-box-shadow: rgba(0,0,0,0.08),
   );
 }
 
@@ -27,6 +28,7 @@
     $boder-color: rgba(255, 255, 255, 0.1),
     $tab-active: hsla(0,0%,100%,0.3),
     $banner-home-dot: #d8d8d8,
-    $logo: 'dark'
+    $sticky-header-box-shadow: rgba(0,0,0,0.08),
+    $logo: 'dark',
   );
 }

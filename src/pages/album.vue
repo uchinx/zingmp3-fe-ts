@@ -41,6 +41,22 @@ export default {
           </p>
           <p>{{ album.like }} {{ $t('lover') }}</p>
         </div>
+        <div class="action">
+          <button class="btn zing">
+            <div class="d-flex">
+              <i class="icon ic-play"></i>
+              <span>{{ $t('play_random') }}</span>
+            </div>
+          </button>
+        </div>
+        <div class="bottom">
+          <button class="btn rounded">
+            <i class="icon ic-like"></i>
+          </button>
+          <button class="btn rounded">
+            <i class="icon ic-more"></i>
+          </button>
+        </div>
       </div>
     </div>
     <div class="album">
@@ -102,6 +118,23 @@ $border-radius: 8px;
       p {
         font-size: 13px;
         line-height: 1.5;
+      }
+    }
+    .action {
+      margin: 10px 0;
+      .btn {
+        font-size: 14px;
+        text-transform: uppercase;
+        & i.icon {
+          font-size: 15px;
+          margin-right: 8px;
+        }
+      }
+    }
+    .bottom {
+      .btn {
+        font-size: 17px;
+        margin: 5px;
       }
     }
   }

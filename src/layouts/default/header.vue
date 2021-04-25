@@ -1,17 +1,48 @@
 <script lang="ts">
+import { onMounted, ref } from 'vue'
 import ThemeIcon from './theme-icon.vue'
+import { useRouter } from 'vue-router'
 export default {
   components: { ThemeIcon },
+  setup() {
+    const isSticky = ref(false)
+    const router = useRouter()
+    const historyState = ref(history.state)
+    onMounted(() => {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 10) {
+          isSticky.value = true
+        } else {
+          isSticky.value = false
+        }
+      })
+      window.addEventListener('popstate', (ev) => {
+        historyState.value = ev.state
+      })
+    })
+    function routerBack() {
+      router.back()
+    }
+    function routerForward() {
+      router.forward()
+    }
+    return {
+      isSticky,
+      routerForward,
+      routerBack,
+      historyState
+    }
+  }
 }
 </script>
 
 <template>
-  <header>
+  <header :class="{ 'is-sticky': isSticky }">
     <div class="navigation">
-      <button @click="toggle" class="btn">
+      <button @click="routerBack" class="btn" :disabled="!historyState.back">
         <i class="ic-back"></i>
       </button>
-      <button class="btn">
+      <button class="btn" @click="routerForward" :disabled="!historyState.forward">
         <i class="ic-forward"></i>
       </button>
     </div>
@@ -53,11 +84,17 @@ header {
   align-items: center;
   position: sticky;
   top: 0;
-  background: var(--background);
   z-index: 111;
+  &.is-sticky {
+    background: var(--background);
+    box-shadow: 0 3px 5px var(--sticky-header-box-shadow);
+  }
   .navigation {
     .btn {
       background: transparent !important;
+      &[disabled=""] {
+        opacity: .4;
+      }
       i {
         font-size: 25px;
       }
@@ -125,7 +162,7 @@ header {
     }
   }
   .btn {
-    padding: 8px 10px;
+    padding: 10px;
     i {
       font-size: 20px;
       width: 20px;

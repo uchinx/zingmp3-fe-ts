@@ -6,5 +6,6 @@ export default {
   'from_playlist': 'Từ danh sách phát',
   'updated_at': 'Cập nhật',
   'lover': 'Người yêu thích',
-  "quote": "Lời tựa"
+  "quote": "Lời tựa",
+  'play_random': 'Phát ngẫu nhiên',
 }
