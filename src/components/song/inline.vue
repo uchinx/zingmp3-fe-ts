@@ -1,5 +1,6 @@
 <script lang="ts">
 import { displayDuration } from '@/helpers/utils'
+import { ref } from 'vue'
 export default {
   props: {
     song: {
@@ -7,8 +8,20 @@ export default {
     },
   },
   setup() {
+    const isPlaying = ref(false)
+    const isLiked = ref(false)
+    const toggle = function () {
+      isPlaying.value = !isPlaying.value
+    }
+    function toggleLike() {
+      isLiked.value = !isLiked.value
+    }
     return {
       displayDuration,
+      isPlaying,
+      isLiked,
+      toggle,
+      toggleLike,
     }
   },
 }
@@ -16,8 +29,15 @@ export default {
 <template>
   <div class="song" v-if="song">
     <div class="left">
-      <figure class="thumbnail">
+      <figure class="thumbnail" @click="toggle">
         <img :src="song.thumbnail" alt="thumbnail" />
+        <div class="overlay">
+          <div class="center">
+            <button class="btn">
+              <i class="icon" :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"></i>
+            </button>
+          </div>
+        </div>
       </figure>
       <div class="title">
         <h4>{{ song.title }}</h4>
@@ -43,8 +63,8 @@ export default {
         <button class="btn" v-if="song.hasLyric">
           <i class="icon ic-karaoke"></i>
         </button>
-        <button class="btn">
-          <i class="icon ic-like"></i>
+        <button class="btn" @click="toggleLike">
+          <i class="icon ic-like" :class="isLiked ? 'ic-like-full' : 'ic-like'"></i>
         </button>
         <button class="btn">
           <i class="icon ic-more"></i>
@@ -65,6 +85,9 @@ export default {
   align-items: center;
   &:hover {
     background-color: var(--alpha-bg);
+    .left .thumbnail .overlay {
+      visibility: visible;
+    } 
   }
   & > div {
     flex: 1;
@@ -76,8 +99,32 @@ export default {
       margin: 0;
       border-radius: 4px;
       overflow: hidden;
+      position: relative;
       img {
         width: 100%;
+      }
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        visibility: hidden;
+        .center {
+          flex: 1;
+          text-align: center;
+          .btn {
+            color: #fff;
+            font-size: 17px;
+            & > i:hover {
+              opacity: .7;
+            }
+          }
+        }
       }
     }
     .title {

@@ -2,7 +2,7 @@
 import SongInline from '@/components/song/inline.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchAlbum } from '@/api'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 export default {
   components: { SongInline },
   setup() {
@@ -10,6 +10,8 @@ export default {
     const router = useRouter()
     const { id } = route.params
     const album = ref()
+    const isPlaying = ref(false)
+    const isLiked = ref(false)
 
     onMounted(async () => {
       const result = await fetchAlbum(<string>id)
@@ -19,7 +21,15 @@ export default {
         router.push('/404.html')
       }
     })
-    return { album }
+
+    function toggle() {
+      isPlaying.value = !isPlaying.value
+    }
+    function toggleLike() {
+      isLiked.value = !isLiked.value
+    }
+
+    return { album, isPlaying, toggle, isLiked, toggleLike }
   },
 }
 </script>
@@ -27,35 +37,51 @@ export default {
 <template>
   <div class="album-page" v-if="album">
     <div class="album-info">
-      <div class="sticky">
-        <div class="cover">
+      <div class="sticky md-flex">
+        <div class="cover" :class="{ 'is-playing': isPlaying }">
           <img :src="album.thumbnailM" alt="cover" />
-        </div>
-        <div class="name">
-          <h1>{{ album.title }}</h1>
-        </div>
-        <div class="info">
-          <p>
-            {{ $t('updated_at') }}:
-            {{ new Date(album.contentLastUpdate * 1000).toLocaleDateString() }}
-          </p>
-          <p>{{ album.like }} {{ $t('lover') }}</p>
-        </div>
-        <div class="action">
-          <button class="btn zing">
-            <div class="d-flex">
-              <i class="icon ic-play"></i>
-              <span>{{ $t('play_random') }}</span>
+          <div class="overlay" :class="{ 'is-playing': isPlaying }">
+            <div class="center">
+              <button class="btn border" @click="toggle">
+                <i
+                  class="icon"
+                  :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"
+                ></i>
+              </button>
             </div>
-          </button>
+          </div>
         </div>
-        <div class="bottom">
-          <button class="btn rounded">
-            <i class="icon ic-like"></i>
-          </button>
-          <button class="btn rounded">
-            <i class="icon ic-more"></i>
-          </button>
+        <div class="md-right">
+          <div class="name">
+            <h1>{{ album.title }}</h1>
+          </div>
+          <div class="info">
+            <p>
+              {{ $t('updated_at') }}:
+              {{
+                new Date(album.contentLastUpdate * 1000).toLocaleDateString()
+              }}
+            </p>
+            <p>{{ album.like }} {{ $t('lover') }}</p>
+          </div>
+          <div class="md-action">
+            <div class="action">
+              <button class="btn zing">
+                <div class="d-flex">
+                  <i class="icon ic-play"></i>
+                  <span>{{ $t('play_random') }}</span>
+                </div>
+              </button>
+            </div>
+            <div class="bottom">
+              <button class="btn rounded" @click="toggleLike">
+                <i class="icon" :class="isLiked ? 'ic-like-full' : 'ic-like'"></i>
+              </button>
+              <button class="btn rounded">
+                <i class="icon ic-more"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -79,29 +105,92 @@ export default {
 
 <style lang="scss" scoped>
 $border-radius: 8px;
+$large-width: 300px;
 .album-page {
   display: flex;
+  @include media('<1200px') {
+    flex-direction: column;
+    .album-info {
+      width: 100% !important;
+      text-align: left !important;
+      margin-bottom: 20px;
+      .md-flex {
+        display: flex !important;
+        .cover {
+          width: 200px !important;
+        }
+        .md-right {
+          margin-left: 20px;
+        }
+        .md-action {
+          display: flex;
+          align-items: center;
+          margin: 20px 0;
+        }
+      }
+    }
+  }
   .album-info {
-    width: 300px;
+    width: $large-width;
     text-align: center;
     margin-right: 32px;
     top: 100px;
     .sticky {
       position: sticky;
-      top: 111px;
+      top: 90px;
     }
     .cover {
+      width: $large-width;
       overflow: hidden;
       border-radius: $border-radius;
       box-shadow: 0 5px 8px 0 rgb(0 0 0 / 20%);
       display: flex;
+      position: relative;
+      transition: 0.8s;
+      transform: rotate(0deg);
+      &.is-playing {
+        border-radius: 100% !important;
+        animation: spinner infinite 15s linear 1s;
+      }
       img {
         border-radius: $border-radius;
         width: 100%;
         height: auto;
         transition: 0.5s;
-        &:hover {
+      }
+      &:hover {
+        img {
           transform: scale(1.1);
+        }
+        .overlay {
+          visibility: visible;
+        }
+      }
+      .overlay.is-playing {
+        visibility: visible !important;
+      }
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 111;
+        visibility: hidden;
+        display: flex;
+        align-items: center;
+        .center {
+          text-align: center;
+          z-index: 1111;
+          flex: 1;
+          .btn {
+            font-size: 18px;
+            color: #fff;
+            // padding: 13px;
+            border: 1px solid #fff;
+            border-radius: 100%;
+          }
         }
       }
     }

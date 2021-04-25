@@ -1,9 +1,15 @@
 <script lang="ts">
 import SidebarComponent from './default/sidebar.vue'
 import HeaderComponent from './default/header.vue'
-import QueuePlaylist from '../components/queue-playlist.vue'
+import QueuePlaylist from '@/components/queue-playlist.vue'
+import PlayerComponent from '@/components/player.vue'
 export default {
-  components: { SidebarComponent, HeaderComponent, QueuePlaylist },
+  components: {
+    SidebarComponent,
+    HeaderComponent,
+    QueuePlaylist,
+    PlayerComponent,
+  },
 }
 </script>
 
@@ -17,11 +23,15 @@ export default {
       </div>
     </section>
     <queue-playlist />
+    <player-component />
   </div>
 </template>
 
 <style lang="scss" scoped>
 $additional-width: $sidebar-width + $queue-playlist-width;
+.default-layout {
+  position: relative;
+}
 .content {
   margin-left: $sidebar-width;
   width: calc(100% - #{$additional-width});

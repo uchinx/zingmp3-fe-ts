@@ -1,13 +1,20 @@
 <script lang="ts">
 import { onMounted, ref } from 'vue'
 import ThemeIcon from './theme-icon.vue'
-import { useRouter } from 'vue-router'
+import { onBeforeRouteUpdate, useRouter } from 'vue-router'
 export default {
   components: { ThemeIcon },
   setup() {
     const isSticky = ref(false)
     const router = useRouter()
-    const historyState = ref(history.state)
+    const historyState = ref(window.history.state)
+
+    onBeforeRouteUpdate(() => {
+      setTimeout(() => {
+        historyState.value = window.history.state
+      }, 200)
+    })
+
     onMounted(() => {
       window.addEventListener('scroll', () => {
         if (window.scrollY > 10) {
@@ -30,9 +37,9 @@ export default {
       isSticky,
       routerForward,
       routerBack,
-      historyState
+      historyState,
     }
-  }
+  },
 }
 </script>
 
@@ -42,7 +49,11 @@ export default {
       <button @click="routerBack" class="btn" :disabled="!historyState.back">
         <i class="ic-back"></i>
       </button>
-      <button class="btn" @click="routerForward" :disabled="!historyState.forward">
+      <button
+        class="btn"
+        @click="routerForward"
+        :disabled="!historyState.forward"
+      >
         <i class="ic-forward"></i>
       </button>
     </div>
@@ -92,8 +103,8 @@ header {
   .navigation {
     .btn {
       background: transparent !important;
-      &[disabled=""] {
-        opacity: .4;
+      &[disabled=''] {
+        opacity: 0.4;
       }
       i {
         font-size: 25px;
