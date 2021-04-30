@@ -1,33 +1,35 @@
 <script lang="ts">
 import { displayDuration } from '@/helpers/utils'
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
+import { usePlayer } from '@/composables'
 export default {
   props: {
     song: {
       type: Object,
+      default: () => {}
     },
   },
-  setup() {
-    const isPlaying = ref(false)
+  setup({ song }) {
+    const player = usePlayer()
     const isLiked = ref(false)
-    const toggle = function () {
-      isPlaying.value = !isPlaying.value
-    }
     function toggleLike() {
       isLiked.value = !isLiked.value
     }
+    const album = inject('album')
+    const isPlaying = player.isPlaying && player.currentSongId === song.encodeId
     return {
+      ...player,
       displayDuration,
-      isPlaying,
       isLiked,
-      toggle,
       toggleLike,
+      isPlaying,
+      album
     }
   },
 }
 </script>
 <template>
-  <div class="song" v-if="song">
+  <div class="song" v-if="song" @click="song && playSong(song.encodeId, album)">
     <div class="left">
       <figure class="thumbnail" @click="toggle">
         <img :src="song.thumbnail" alt="thumbnail" />

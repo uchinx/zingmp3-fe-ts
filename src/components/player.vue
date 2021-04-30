@@ -1,3 +1,12 @@
+<script lang="ts">
+import { usePlayer } from '@/composables'
+export default {
+  setup() {
+    const player = usePlayer({ watch: true })
+    return { ...player }
+  },
+}
+</script>
 <template>
   <div class="wrapper-player">
     <div class="song-detail">
@@ -30,8 +39,13 @@
             <i class="icon ic-shuffle"></i></button
           ><button class="btn">
             <i class="icon ic-pre"></i></button
-          ><button class="btn play">
-            <i class="icon ic-pause-circle-outline"></i></button
+          ><button class="btn play" @click="playSong">
+            <i
+              class="icon"
+              :class="
+                isPlaying ? 'ic-pause-circle-outline' : 'ic-play-circle-outline'
+              "
+            ></i></button
           ><button class="btn">
             <i class="icon ic-next"></i></button
           ><button class="btn">
@@ -221,3 +235,11 @@
   }
 }
 </style>
+
+  function usePlayer() {
+    throw new Error('Function not implemented.')
+  }
+
+  function usePlayer() {
+    throw new Error('Function not implemented.')
+  }

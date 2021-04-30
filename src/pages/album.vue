@@ -2,7 +2,7 @@
 import SongInline from '@/components/song/inline.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchAlbum } from '@/api'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, provide, ref } from 'vue'
 export default {
   components: { SongInline },
   setup() {
@@ -21,6 +21,8 @@ export default {
         router.push('/404.html')
       }
     })
+    
+    provide('album', album)
 
     function toggle() {
       isPlaying.value = !isPlaying.value
