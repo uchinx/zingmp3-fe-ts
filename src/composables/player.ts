@@ -1,4 +1,5 @@
-import { Song, Playlist, Player } from '@/types'
+import { Song, Playlist } from '@/types'
+import Player from '@/helpers/player'
 import { computed, watch } from 'vue'
 import { useStore } from 'vuex'
 
@@ -6,26 +7,27 @@ export default function usePlayer(
   option: {
     watch?: boolean
   } = {}
-): Player {
+) {
   const store = useStore()
+  const _player: Player = store.state['player']
   const player = {
     togglePlay() {
-      player.isPlaying.value = !player.isPlaying.value
+      _player.isPlaying = !_player.isPlaying
     },
-    playSong(song, playlist) {
-      if (player.currentSongId.value === song.encodeId) {
+    playSong(song: Song, playlist?: Playlist) {
+      if (_player.currentSongId === song.encodeId) {
         player.togglePlay()
         return
       }
-      player.currentSong.value = song
-      player.isPlaying.value = true
-      if (playlist && player.currentPlaylist.value.encodeId !== playlist.encodeId) {
-        player.currentPlaylist.value = playlist
+      _player.currentSong = song
+      _player.isPlaying = true
+      if (playlist && _player.currentPlaylistId !== playlist.encodeId) {
+        _player.currentPlaylist = playlist
       }
     },
     playPlaylist(playlist = <Playlist>{}) {
       if (playlist.song && Array.isArray(playlist.song.items)) {
-        if (playlist.encodeId === player.currentPlaylistId.value) {
+        if (playlist.encodeId === _player.currentPlaylistId) {
           return player.togglePlay()
         }
         const firstSong: Song = playlist.song.items[0]
@@ -34,33 +36,11 @@ export default function usePlayer(
         }
       }
     },
-    isPlaying: computed({
-      get(): boolean {
-        return store.getters['player/isPlaying']
-      },
-      set(val: boolean) {
-        store.commit('player/update', ['isPlaying', val])
-      },
-    }),
-    currentSong: computed({
-      get(): Song {
-        return store.getters['player/currentSong']
-      },
-      set(song: Song) {
-        store.commit('player/update', ['currentSong', song])
-      },
-    }),
-    currentSongId: computed(() => player.currentSong.value.encodeId),
-    currentPlaylist: computed({
-      get(): Playlist {
-        return store.getters['player/currentPlaylist']
-      },
-      set(playlist: Playlist) {
-        store.commit('player/update', ['currentPlaylist', playlist])
-      },
-    }),
-    currentPlaylistId: computed(() => player.currentPlaylist.value.encodeId)
-  } as Player
+    isPlaying: computed(() => _player.isPlaying),
+    currentSong: computed(() => _player.currentSong || {}),
+    currentPlaylist: computed(() => _player.currentPlaylist || {}),
+    currentSongId: computed(() => _player.currentSong.encodeId)
+  }
 
   if (option.watch) {
     watch(player.currentSongId, (val) => {

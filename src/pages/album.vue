@@ -29,7 +29,7 @@ export default {
       isLiked.value = !isLiked.value
     }
 
-    const isCurrent = computed(() => player.currentPlaylistId.value === album.value.encodeId)
+    const isCurrent = computed(() => player.currentPlaylist.value.encodeId === album.value.encodeId)
     const isPlaying = computed(() => isCurrent.value && player.isPlaying.value)
 
     return {

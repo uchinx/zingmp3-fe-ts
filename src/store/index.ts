@@ -1,8 +1,15 @@
+import Player from '@/helpers/player'
 import { createStore } from 'vuex'
-import player from './modules/player'
 
 const store = createStore({
-  modules: { player },
+  state: {
+    player: new Proxy(new Player(), {
+      set(target: any, prop, val) {
+        target[prop] = val
+        return true
+      },
+    }),
+  },
 })
 
 export default store
