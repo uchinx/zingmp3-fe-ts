@@ -1,6 +1,6 @@
 <script lang="ts">
 import { displayDuration } from '@/helpers/utils'
-import { inject, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { usePlayer } from '@/composables'
 export default {
   props: {
@@ -16,22 +16,24 @@ export default {
       isLiked.value = !isLiked.value
     }
     const album = inject('album')
-    const isPlaying = player.isPlaying && player.currentSongId === song.encodeId
+    const isCurrent = computed(() => player.currentSongId.value === song.encodeId)
+    const isPlaying = computed(() => isCurrent.value && player.isPlaying.value)
     return {
       ...player,
       displayDuration,
       isLiked,
       toggleLike,
       isPlaying,
+      isCurrent,
       album
     }
   },
 }
 </script>
 <template>
-  <div class="song" v-if="song" @click="song && playSong(song.encodeId, album)">
+  <div class="song" :class="{ 'is-playing': isPlaying, 'is-current': isCurrent }" @dblclick="playSong(song, album)">
     <div class="left">
-      <figure class="thumbnail" @click="toggle">
+      <figure class="thumbnail" @click="playSong(song, album)">
         <img :src="song.thumbnail" alt="thumbnail" />
         <div class="overlay">
           <div class="center">
@@ -85,7 +87,7 @@ export default {
   border-top: 1px solid var(--alpha-bg);
   border-radius: 3px;
   align-items: center;
-  &:hover {
+  &:hover, &.is-current {
     background-color: var(--alpha-bg);
     .left .thumbnail .overlay {
       visibility: visible;

@@ -8,4 +8,5 @@ export default {
   'lover': 'Người yêu thích',
   "quote": "Lời tựa",
   'play_random': 'Phát ngẫu nhiên',
+  'pause': 'Tạm dừng'
 }

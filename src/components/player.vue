@@ -1,9 +1,14 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
+import { onMounted } from '@vue/runtime-core'
+import { displayDuration } from '@/helpers/utils'
 export default {
   setup() {
     const player = usePlayer({ watch: true })
-    return { ...player }
+    onMounted(() => {
+      console.log(player)
+    })
+    return { ...player, displayDuration }
   },
 }
 </script>
@@ -12,14 +17,25 @@ export default {
     <div class="song-detail">
       <figure class="thumbnail">
         <img
-          src="https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/c/6/d/e/c6de70008188e15bf88ebcf15205b97f.jpg"
+          v-if="currentSong.thumbnail"
+          :src="currentSong.thumbnail"
           alt="thumbnail"
         />
       </figure>
       <div class="detail">
         <div>
-          <h4 class="title">Xin Goi Nhau La Co Nhan</h4>
-          <div class="artists">Doan Minh, Quynh Trang</div>
+          <h4 class="title">{{ currentSong.title || '' }}</h4>
+          <div class="artists" v-if="Array.isArray(currentSong.artists)">
+            <template
+              v-for="(artist, index) in currentSong.artists"
+              :key="'artist' + index"
+            >
+              <a href="#">
+                {{ artist.name
+                }}<span v-if="index !== currentSong.artists.length - 1">, </span>
+              </a>
+            </template>
+          </div>
         </div>
       </div>
       <div class="action">
@@ -39,7 +55,7 @@ export default {
             <i class="icon ic-shuffle"></i></button
           ><button class="btn">
             <i class="icon ic-pre"></i></button
-          ><button class="btn play" @click="playSong">
+          ><button class="btn play" @click="togglePlay">
             <i
               class="icon"
               :class="
@@ -53,14 +69,14 @@ export default {
           </button>
         </div>
       </div>
-      <div class="timer">
+      <div class="timer" v-if="currentSong.encodeId">
         <div class="current-duration">01:22</div>
         <div class="progress-bar">
           <div class="progress-bg">
             <div class="progress"></div>
           </div>
         </div>
-        <div class="total-duration">04:26</div>
+        <div class="total-duration">{{ displayDuration(currentSong.duration, 2) }}</div>
       </div>
     </div>
     <div class="right-control">
@@ -94,6 +110,7 @@ export default {
   display: flex;
   border-top: 1px solid var(--alpha-bg);
   padding: 0 20px;
+  z-index: 1111;
   .song-detail {
     width: 30%;
     display: flex;

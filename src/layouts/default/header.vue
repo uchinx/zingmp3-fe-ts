@@ -46,13 +46,13 @@ export default {
 <template>
   <header :class="{ 'is-sticky': isSticky }">
     <div class="navigation">
-      <button @click="routerBack" class="btn" :disabled="!historyState.back">
+      <button @click="routerBack" class="btn" :disabled="historyState && !historyState.back">
         <i class="ic-back"></i>
       </button>
       <button
         class="btn"
         @click="routerForward"
-        :disabled="!historyState.forward"
+        :disabled="historyState && !historyState.forward"
       >
         <i class="ic-forward"></i>
       </button>

@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import player from './player'
+import player from './modules/player'
 
 const store = createStore({
   modules: { player },

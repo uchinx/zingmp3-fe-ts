@@ -2,15 +2,16 @@
 import SongInline from '@/components/song/inline.vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchAlbum } from '@/api'
-import { onMounted, provide, ref } from 'vue'
+import { computed, onMounted, provide, ref } from 'vue'
+import { usePlayer } from '@/composables'
 export default {
   components: { SongInline },
   setup() {
     const route = useRoute()
     const router = useRouter()
+    const player = usePlayer()
     const { id } = route.params
     const album = ref()
-    const isPlaying = ref(false)
     const isLiked = ref(false)
 
     onMounted(async () => {
@@ -21,17 +22,24 @@ export default {
         router.push('/404.html')
       }
     })
-    
+
     provide('album', album)
 
-    function toggle() {
-      isPlaying.value = !isPlaying.value
-    }
     function toggleLike() {
       isLiked.value = !isLiked.value
     }
 
-    return { album, isPlaying, toggle, isLiked, toggleLike }
+    const isCurrent = computed(() => player.currentPlaylistId.value === album.value.encodeId)
+    const isPlaying = computed(() => isCurrent.value && player.isPlaying.value)
+
+    return {
+      album,
+      isLiked,
+      toggleLike,
+      isPlaying,
+      playPlaylist: player.playPlaylist,
+      togglePlay: player.togglePlay,
+    }
   },
 }
 </script>
@@ -44,7 +52,7 @@ export default {
           <img :src="album.thumbnailM" alt="cover" />
           <div class="overlay" :class="{ 'is-playing': isPlaying }">
             <div class="center">
-              <button class="btn border" @click="toggle">
+              <button class="btn border" @click="togglePlay">
                 <i
                   class="icon"
                   :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"
@@ -68,8 +76,12 @@ export default {
           </div>
           <div class="md-action">
             <div class="action">
-              <button class="btn zing">
-                <div class="d-flex">
+              <button class="btn zing" @click="playPlaylist(album)">
+                <div class="d-flex" v-if="isPlaying">
+                  <i class="icon ic-pause"></i>
+                  <span>{{ $t('pause') }}</span>
+                </div>
+                <div class="d-flex" v-else>
                   <i class="icon ic-play"></i>
                   <span>{{ $t('play_random') }}</span>
                 </div>
@@ -77,7 +89,10 @@ export default {
             </div>
             <div class="bottom">
               <button class="btn rounded" @click="toggleLike">
-                <i class="icon" :class="isLiked ? 'ic-like-full' : 'ic-like'"></i>
+                <i
+                  class="icon"
+                  :class="isLiked ? 'ic-like-full' : 'ic-like'"
+                ></i>
               </button>
               <button class="btn rounded">
                 <i class="icon ic-more"></i>

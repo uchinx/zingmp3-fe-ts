@@ -10,7 +10,7 @@ export default {
 </script>
 <template>
   <div class="card">
-    <div class="image" :class="{ playing }">
+    <div class="image">
       <img :src="detail.thumbnail" alt="thumbnail" />
       <div class="controls">
         <div class="center">
