@@ -1,7 +1,7 @@
 <script lang="ts">
 import SongInline from '@/components/song/inline.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchAlbum } from '@/api'
+import { fetchPlaylist } from '@/api'
 import { computed, onMounted, provide, ref } from 'vue'
 import { usePlayer } from '@/composables'
 export default {
@@ -15,7 +15,7 @@ export default {
     const isLiked = ref(false)
 
     onMounted(async () => {
-      const result = await fetchAlbum(<string>id)
+      const result = await fetchPlaylist(<string>id)
       if (result && result.data) {
         album.value = result.data
       } else {

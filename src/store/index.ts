@@ -1,8 +1,17 @@
+import Player from '@/helpers/player'
 import { createStore } from 'vuex'
-import player from './modules/player'
+import mutations from './global/mutations'
 
 const store = createStore({
-  modules: { player },
+  state: {
+    player: new Proxy(new Player(), {
+      set(target: any, prop, val) {
+        target[prop] = val
+        return true
+      },
+    }),
+  },
+  mutations: mutations,
 })
 
 export default store

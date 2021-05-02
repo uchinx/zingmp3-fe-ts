@@ -1,74 +1,75 @@
-import { Song, Playlist, Player } from '@/types'
-import { computed, watch } from 'vue'
+import { UsePlayer, Playlist, Song } from '@/types'
+import { computed, watch, ref } from 'vue'
 import { useStore } from 'vuex'
+import Player from '@/helpers/player'
+import { fetchStreaming } from '@/api'
+const QUALITY = '128'
 
 export default function usePlayer(
   option: {
     watch?: boolean
   } = {}
-): Player {
+): UsePlayer {
   const store = useStore()
-  const player = {
+  const player: Player = store.state.player
+  const currentDuration = ref(0)
+  const progress = ref(0)
+  const _player = <UsePlayer>{
     togglePlay() {
-      player.isPlaying.value = !player.isPlaying.value
+      player.isPlaying = !player.isPlaying
     },
-    playSong(song, playlist) {
-      if (player.currentSongId.value === song.encodeId) {
-        player.togglePlay()
+    async playSong(song, playlist) {
+      if (player.currentSongId === song.encodeId) {
+        _player.togglePlay()
         return
       }
-      player.currentSong.value = song
-      player.isPlaying.value = true
-      if (playlist && player.currentPlaylist.value.encodeId !== playlist.encodeId) {
-        player.currentPlaylist.value = playlist
+      player.currentSong = song
+      const result = await fetchStreaming(song.encodeId)
+      if (result && result.data) {
+        player.initialize(result.data[QUALITY], true)
+      }
+      if (playlist && player.currentPlaylistId !== playlist.encodeId) {
+        player.currentPlaylist = playlist
       }
     },
     playPlaylist(playlist = <Playlist>{}) {
       if (playlist.song && Array.isArray(playlist.song.items)) {
-        if (playlist.encodeId === player.currentPlaylistId.value) {
-          return player.togglePlay()
+        if (playlist.encodeId === player.currentPlaylistId) {
+          return _player.togglePlay()
         }
-        const firstSong: Song = playlist.song.items[0]
+        const firstSong = playlist.song.items[0]
         if (firstSong) {
-          player.playSong(firstSong, playlist)
+          _player.playSong(firstSong, playlist)
         }
       }
     },
-    isPlaying: computed({
-      get(): boolean {
-        return store.getters['player/isPlaying']
-      },
-      set(val: boolean) {
-        store.commit('player/update', ['isPlaying', val])
-      },
-    }),
-    currentSong: computed({
-      get(): Song {
-        return store.getters['player/currentSong']
-      },
-      set(song: Song) {
-        store.commit('player/update', ['currentSong', song])
-      },
-    }),
-    currentSongId: computed(() => player.currentSong.value.encodeId),
-    currentPlaylist: computed({
-      get(): Playlist {
-        return store.getters['player/currentPlaylist']
-      },
-      set(playlist: Playlist) {
-        store.commit('player/update', ['currentPlaylist', playlist])
-      },
-    }),
-    currentPlaylistId: computed(() => player.currentPlaylist.value.encodeId)
-  } as Player
+    isPlaying: computed(() => player.isPlaying),
+    currentSong: computed(() => player.currentSong),
+    currentSongId: computed(() => player.currentSong.encodeId),
+    currentPlaylist: computed(() => player.currentPlaylist),
+    currentPlaylistId: computed(() => player.currentPlaylist.encodeId),
+    Player: player,
+    currentDuration,
+    progress,
+  }
 
   if (option.watch) {
-    watch(player.currentSongId, (val) => {
+    watch(_player.currentSongId, (val) => {
       console.log(val)
     })
-    watch(player.currentPlaylist, (val) => {
+    watch(_player.currentPlaylist, (val) => {
       console.log('playlist change', val)
     })
+    watch(_player.isPlaying, (val) => {
+      console.log('thinh playing', val)
+    })
+    function _interval() {
+      currentDuration.value = player._howler ? <number>player._howler.seek() : 0
+      const duration = player._howler ? player._howler.duration() : 0
+      setTimeout(_interval, 100)
+      progress.value = (currentDuration.value / duration) * 100
+    }
+    _interval()
   }
-  return player
+  return _player
 }

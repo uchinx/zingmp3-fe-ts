@@ -1,14 +1,15 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
-import { onMounted } from '@vue/runtime-core'
 import { displayDuration } from '@/helpers/utils'
+import { useStore } from 'vuex'
+import { ref, watch } from 'vue'
 export default {
   setup() {
     const player = usePlayer({ watch: true })
-    onMounted(() => {
-      console.log(player)
-    })
-    return { ...player, displayDuration }
+    return {
+      ...player,
+      displayDuration,
+    }
   },
 }
 </script>
@@ -32,7 +33,9 @@ export default {
             >
               <a href="#">
                 {{ artist.name
-                }}<span v-if="index !== currentSong.artists.length - 1">, </span>
+                }}<span v-if="index !== currentSong.artists.length - 1"
+                  >,
+                </span>
               </a>
             </template>
           </div>
@@ -70,13 +73,15 @@ export default {
         </div>
       </div>
       <div class="timer" v-if="currentSong.encodeId">
-        <div class="current-duration">01:22</div>
+        <div class="current-duration">{{ displayDuration(currentDuration, 2) }}</div>
         <div class="progress-bar">
           <div class="progress-bg">
-            <div class="progress"></div>
+            <div class="progress" :style="{ width: progress + '%' }"></div>
           </div>
         </div>
-        <div class="total-duration">{{ displayDuration(currentSong.duration, 2) }}</div>
+        <div class="total-duration">
+          {{ displayDuration(currentSong.duration, 2) }}
+        </div>
       </div>
     </div>
     <div class="right-control">
@@ -197,7 +202,6 @@ export default {
           position: absolute;
           left: 0;
           top: 0;
-          width: 40%;
           height: 3px;
           background: var(--primary);
         }
