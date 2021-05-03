@@ -14,6 +14,8 @@ export default function usePlayer(
   const player: Player = store.state.player
   const currentDuration = ref(0)
   const progress = ref(0)
+  const progressRef = ref()
+  let isSeek = false
   const _player = <UsePlayer>{
     togglePlay() {
       player.isPlaying = !player.isPlaying
@@ -43,6 +45,15 @@ export default function usePlayer(
         }
       }
     },
+    handleSeek(ev: any) {
+      if (ev.type === 'mousedown') {
+        isSeek = true
+      }
+      if (ev.type === 'click' && ev.target) {
+        const percentage = (ev.offsetX / ev.target.offsetWidth) * 100
+        player._howler.seek(percentage * player._howler.duration() / 100)
+      }
+    },
     isPlaying: computed(() => player.isPlaying),
     currentSong: computed(() => player.currentSong),
     currentSongId: computed(() => player.currentSong.encodeId),
@@ -51,6 +62,7 @@ export default function usePlayer(
     Player: player,
     currentDuration,
     progress,
+    progressRef
   }
 
   if (option.watch) {
@@ -64,12 +76,38 @@ export default function usePlayer(
       console.log('thinh playing', val)
     })
     function _interval() {
-      currentDuration.value = player._howler ? <number>player._howler.seek() : 0
-      const duration = player._howler ? player._howler.duration() : 0
-      setTimeout(_interval, 100)
-      progress.value = (currentDuration.value / duration) * 100
+      if (!isSeek) {
+        currentDuration.value = player._howler
+          ? <number>player._howler.seek()
+          : 0
+        const duration = player._howler ? player._howler.duration() : 0
+        progress.value = (currentDuration.value / duration) * 100
+      }
+      setTimeout(_interval, 250)
     }
     _interval()
+    document.onmouseup = () => {
+      if (isSeek) {
+        player._howler.seek(progress.value * player._howler.duration() / 100)
+      }
+      isSeek = false
+    }
+    document.onmousemove = (ev) => {
+      if (isSeek) {
+        const ele = progressRef.value
+        if (ele) {
+          const w = ele.offsetWidth
+          let x = ev.clientX - ele.offsetLeft
+          if (x < 0) x = 0
+          if (x > w) x = w
+          if (ev.target && player._howler) {
+            const percentage = (x / w) * 100
+            currentDuration.value = percentage * player._howler.duration() / 100
+            progress.value = percentage
+          }
+        }
+      }
+    }
   }
   return _player
 }

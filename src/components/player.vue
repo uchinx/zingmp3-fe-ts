@@ -73,8 +73,10 @@ export default {
         </div>
       </div>
       <div class="timer" v-if="currentSong.encodeId">
-        <div class="current-duration">{{ displayDuration(currentDuration, 2) }}</div>
-        <div class="progress-bar">
+        <div class="current-duration">
+          {{ displayDuration(currentDuration, 2) }}
+        </div>
+        <div class="progress-bar" ref="progressRef" @mousedown="handleSeek" @click="handleSeek">
           <div class="progress-bg">
             <div class="progress" :style="{ width: progress + '%' }"></div>
           </div>
@@ -182,28 +184,55 @@ export default {
       margin: 4px;
       display: flex;
       align-items: center;
+      user-select: none;
       .current-duration,
       .total-duration {
         padding: 0 14px;
         font-size: 12px;
+        min-width: 60px;
       }
       .progress-bar {
         width: 100%;
         height: 15px;
         display: flex;
         align-items: center;
+        cursor: pointer;
+        &:hover {
+          .progress::after {
+            visibility: visible !important;
+          }
+          .progress-bg {
+            height: 4px;
+          }
+        }
+        & * {
+          pointer-events: none;
+        }
         .progress-bg {
           width: 100%;
           height: 3px;
           position: relative;
-          background: var(--alpha-bg);
+          background: var(--progress-bg);
         }
         .progress {
           position: absolute;
           left: 0;
           top: 0;
-          height: 3px;
-          background: var(--primary);
+          height: 100%;
+          background: var(--progress);
+          &::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 100%;
+            z-index: 11111;
+            background: var(--progress);
+            box-shadow: 0px 0px 2px 1px #0008;
+            visibility: hidden;
+          }
         }
       }
     }
@@ -256,11 +285,3 @@ export default {
   }
 }
 </style>
-
-  function usePlayer() {
-    throw new Error('Function not implemented.')
-  }
-
-  function usePlayer() {
-    throw new Error('Function not implemented.')
-  }
