@@ -54,7 +54,7 @@ export default {
     <div class="player">
       <div class="control">
         <div class="center">
-          <button class="btn">
+          <button class="btn" :class="{ active: isShuffle }" @click="toggleShuffle">
             <i class="icon ic-shuffle"></i></button
           ><button class="btn">
             <i class="icon ic-pre"></i></button
@@ -76,7 +76,12 @@ export default {
         <div class="current-duration">
           {{ displayDuration(currentDuration, 2) }}
         </div>
-        <div class="progress-bar" ref="progressRef" @mousedown="handleSeek" @click="handleSeek">
+        <div
+          class="progress-bar"
+          ref="progressRef"
+          @mousedown="handleSeek"
+          @click="handleSeek"
+        >
           <div class="progress-bg">
             <div class="progress" :style="{ width: progress + '%' }"></div>
           </div>
@@ -177,6 +182,9 @@ export default {
         padding: 0;
         &.play > i {
           font-size: 40px;
+        }
+        &.active {
+          color: var(--primary);
         }
       }
     }

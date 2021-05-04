@@ -1,44 +1,71 @@
 <script lang="ts">
 import { ref } from 'vue'
+import { usePlayer } from '@/composables'
 export default {
   setup() {
     const current = ref('playing')
-    const items = [{
-      name: 'Let Her go',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/b/8/b892777a7b309b6f9f85cfca17e65c9c_1334993877.jpg',
-      artists: ['Passenger']
-    }, {
-      name: 'Marry You',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/9/4/94988ad7edf7e749e7117188a09160de_1288751887.jpg',
-      artists: ['Bruno Mars']
-    }, {
-      name: 'Because I Love You',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/avatars/9/f/9fe66b65ff8aa87a19607e35ba54e464_1298545783.jpg',
-      artists: ['Shakin\' Stevens']
-    }, {
-      name: 'My Love',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/9/5/95680cac41bafb8d12b506c4140af63f_1302606184.jpg',
-      artists: ['Westlife']
-    }, {
-      name: 'No Promises',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/d/b/db9e5d42c9372e69b3c1b252ed9b0833_1293122686.jpg',
-      artists: ['Shayne Ward']
-    }, {
-      name: 'Yesterday Once More',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/7/0/7014824a73ba9e48258e1fdd40c56fdc_1328009644.jpg',
-      artists: ['Yao Si Ting'],
-      is_active: true
-    }]
-    return { current, items }
-  }
+    const player = usePlayer()
+    const items = [
+      {
+        name: 'Let Her go',
+        thumbnail:
+          'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/b/8/b892777a7b309b6f9f85cfca17e65c9c_1334993877.jpg',
+        artists: ['Passenger'],
+      },
+      {
+        name: 'Marry You',
+        thumbnail:
+          'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/9/4/94988ad7edf7e749e7117188a09160de_1288751887.jpg',
+        artists: ['Bruno Mars'],
+      },
+      {
+        name: 'Because I Love You',
+        thumbnail:
+          'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/avatars/9/f/9fe66b65ff8aa87a19607e35ba54e464_1298545783.jpg',
+        artists: ["Shakin' Stevens"],
+      },
+      {
+        name: 'My Love',
+        thumbnail:
+          'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/9/5/95680cac41bafb8d12b506c4140af63f_1302606184.jpg',
+        artists: ['Westlife'],
+      },
+      {
+        name: 'No Promises',
+        thumbnail:
+          'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/d/b/db9e5d42c9372e69b3c1b252ed9b0833_1293122686.jpg',
+        artists: ['Shayne Ward'],
+      },
+      {
+        name: 'Yesterday Once More',
+        thumbnail:
+          'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/7/0/7014824a73ba9e48258e1fdd40c56fdc_1328009644.jpg',
+        artists: ['Yao Si Ting'],
+        is_active: true,
+      },
+    ]
+    return { current, items, ...player }
+  },
 }
 </script>
 <template>
   <aside>
     <div class="header">
       <div class="tab">
-        <button @click="current = 'playing'" class="btn" :class="{ current: current === 'playing' }">{{ $t('playlist') }}</button>
-        <button @click="current = 'listen_recently'" class="btn" :class="{ current: current === 'listen_recently' }">{{ $t('listen_recently') }}</button>
+        <button
+          @click="current = 'playing'"
+          class="btn"
+          :class="{ current: current === 'playing' }"
+        >
+          {{ $t('playlist') }}
+        </button>
+        <button
+          @click="current = 'listen_recently'"
+          class="btn"
+          :class="{ current: current === 'listen_recently' }"
+        >
+          {{ $t('listen_recently') }}
+        </button>
       </div>
       <div class="others">
         <button class="rounded btn alarm is-active">
@@ -51,9 +78,14 @@ export default {
     </div>
     <div class="queue">
       <div class="list">
-        <div v-for="(item, index) in items" :key="'item' + index" class="item" :class="{ 'is-active': item.is_active }">
+        <div
+          v-for="(item, index) in items"
+          :key="'item' + index"
+          class="item"
+          :class="{ 'is-active': item.is_active }"
+        >
           <div class="left">
-            <img :src="item.thumbnail" alt="thumbnail">
+            <img :src="item.thumbnail" alt="thumbnail" />
           </div>
           <div class="right">
             <div class="name">{{ item.name }}</div>
@@ -64,19 +96,39 @@ export default {
       </div>
       <div class="next-up">
         <div class="text-title">{{ $t('next_up') }}</div>
-        <div class="from">{{ $t('from_playlist') }} <a href="#" class="text-primary">Radio Westlife</a></div>
-        <div class="list">
-        <div v-for="(item, index) in items" :key="'item' + index" class="item" :class="{ 'is-active': item.is_active }">
-          <div class="left">
-            <img :src="item.thumbnail" alt="thumbnail">
-          </div>
-          <div class="right">
-            <div class="name">{{ item.name }}</div>
-            <div class="artists">{{ item.artists.join(', ') }}</div>
-          </div>
-          <div class="cover"></div>
+        <div class="from" v-if="currentPlaylist">
+          {{ $t('from_playlist') }}
+          <a href="#" class="text-primary">{{ currentPlaylist.title }}</a>
         </div>
-      </div>
+        <div class="list">
+          <div
+            v-for="(item, index) in queues"
+            :key="'item' + index"
+            class="item"
+            :class="{ 'is-active': item.is_active }"
+          >
+            <div class="left">
+              <img :src="item.thumbnail" alt="thumbnail" />
+            </div>
+            <div class="right">
+              <div class="name">{{ item.title }}</div>
+              <div class="artists">
+                <template
+                  v-for="(artist, index) in item.artists"
+                  :key="'artist' + index"
+                >
+                  <a href="#">
+                    {{ artist.name
+                    }}<span v-if="index !== item.artists.length - 1"
+                      >,
+                    </span>
+                  </a>
+                </template>
+              </div>
+            </div>
+            <div class="cover"></div>
+          </div>
+        </div>
       </div>
     </div>
   </aside>
@@ -92,7 +144,8 @@ aside {
   position: fixed;
   border-left: 1px solid var(--border-color);
   background: var(--background);
-  transition: right .3s;
+  transition: right 0.3s;
+  overflow-y: auto;
   @include media('<large') {
     right: -$queue-playlist-width !important;
   }
@@ -157,7 +210,7 @@ aside {
       width: 100%;
       height: 100%;
       background: var(--background);
-      opacity: .5;
+      opacity: 0.5;
     }
     &:hover {
       background: var(--alpha-bg);

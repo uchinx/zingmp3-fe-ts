@@ -1,8 +1,6 @@
 import { Playlist, Song } from '@/types'
 import { Howl, Howler } from 'howler'
-import store from '@/store'
-import { ref } from 'vue'
-
+import { shuffle } from 'lodash-es'
 interface Handler {
   (val: any, oldVal?: any): void
 }
@@ -16,9 +14,25 @@ class Player {
   public currentSongId: string
   public currentPlaylistId: string
   public duration: number = 0
+  public isShuffle: boolean = false
+  public queues: Song[] = []
   constructor() {
     this.subscribe('currentSong', (val: Song) => {
-      this.duration = val.duration
+      if (val) {
+        this.currentSongId = val.encodeId
+      }
+    })
+    this.subscribe('currentPlaylist', (val: Playlist) => {
+      if (val) {
+        this.currentPlaylistId = val.encodeId
+      }
+    })
+    this.subscribe('isShuffle', (val: boolean) => {
+      if (val && this.currentPlaylistId) {
+        this.queues = shuffle(this.currentPlaylist.song.items.filter(item => item.encodeId !== this.currentSongId))
+      } else {
+        this.queues = this.currentPlaylist.song.items
+      }
     })
   }
   subscribe(prop: string, cb: Handler) {

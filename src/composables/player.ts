@@ -20,7 +20,7 @@ export default function usePlayer(
     togglePlay() {
       player.isPlaying = !player.isPlaying
     },
-    async playSong(song, playlist) {
+    async playSong(song, playlist, isShuffle = false) {
       if (player.currentSongId === song.encodeId) {
         _player.togglePlay()
         return
@@ -32,16 +32,19 @@ export default function usePlayer(
       }
       if (playlist && player.currentPlaylistId !== playlist.encodeId) {
         player.currentPlaylist = playlist
+        if (isShuffle) {
+          player.isShuffle = true
+        }
       }
     },
-    playPlaylist(playlist = <Playlist>{}) {
+    playPlaylist(playlist = <Playlist>{}, isShuffle = false) {
       if (playlist.song && Array.isArray(playlist.song.items)) {
         if (playlist.encodeId === player.currentPlaylistId) {
           return _player.togglePlay()
         }
         const firstSong = playlist.song.items[0]
         if (firstSong) {
-          _player.playSong(firstSong, playlist)
+          _player.playSong(firstSong, playlist, isShuffle)
         }
       }
     },
@@ -54,11 +57,28 @@ export default function usePlayer(
         player._howler.seek(percentage * player._howler.duration() / 100)
       }
     },
+    toggleShuffle() {
+      player.isShuffle = !player.isShuffle
+    },
     isPlaying: computed(() => player.isPlaying),
+    isShuffle: computed({
+      get(): boolean {
+        return player.isShuffle
+      },
+      set(val: boolean) {
+        player.isShuffle = val
+      }
+    }),
     currentSong: computed(() => player.currentSong),
     currentSongId: computed(() => player.currentSong.encodeId),
     currentPlaylist: computed(() => player.currentPlaylist),
     currentPlaylistId: computed(() => player.currentPlaylist.encodeId),
+    queues: computed(() => {
+      if (player.isShuffle) {
+        return player.queues
+      }
+      return player.queues
+    }),
     Player: player,
     currentDuration,
     progress,
@@ -66,15 +86,7 @@ export default function usePlayer(
   }
 
   if (option.watch) {
-    watch(_player.currentSongId, (val) => {
-      console.log(val)
-    })
-    watch(_player.currentPlaylist, (val) => {
-      console.log('playlist change', val)
-    })
-    watch(_player.isPlaying, (val) => {
-      console.log('thinh playing', val)
-    })
+    
     function _interval() {
       if (!isSeek) {
         currentDuration.value = player._howler

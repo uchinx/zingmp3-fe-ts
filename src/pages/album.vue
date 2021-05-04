@@ -76,7 +76,7 @@ export default {
           </div>
           <div class="md-action">
             <div class="action">
-              <button class="btn zing" @click="playPlaylist(album)">
+              <button class="btn zing" @click="playPlaylist(album, true)">
                 <div class="d-flex" v-if="isPlaying">
                   <i class="icon ic-pause"></i>
                   <span>{{ $t('pause') }}</span>
