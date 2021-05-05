@@ -16,8 +16,9 @@ export default {
     })
 
     onMounted(() => {
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 10) {
+      const ele = document.querySelector('.default-layout > .content > .ps')
+      ele.addEventListener('ps-scroll-y', () => {
+        if (ele.scrollTop > 10) {
           isSticky.value = true
         } else {
           isSticky.value = false

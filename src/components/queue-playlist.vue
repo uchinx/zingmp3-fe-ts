@@ -50,6 +50,7 @@ export default {
 </script>
 <template>
   <aside>
+    <perfect-scrollbar>
     <div class="header">
       <div class="tab">
         <button
@@ -143,6 +144,7 @@ export default {
         </div>
       </div>
     </div>
+    </perfect-scrollbar>
   </aside>
 </template>
 
@@ -157,7 +159,10 @@ aside {
   border-left: 1px solid var(--border-color);
   background: var(--background);
   transition: right 0.3s;
-  overflow-y: auto;
+  & > .ps {
+    height: 100vh;
+  }
+  // overflow-y: auto;
   @include media('<large') {
     right: -$queue-playlist-width !important;
   }

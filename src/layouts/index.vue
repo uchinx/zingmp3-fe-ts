@@ -17,10 +17,12 @@ export default {
   <div class="default-layout">
     <sidebar-component />
     <section class="content">
-      <header-component />
-      <div class="wrapper">
-        <router-view />
-      </div>
+      <perfect-scrollbar>
+        <header-component />
+        <div class="wrapper">
+          <router-view />
+        </div>
+      </perfect-scrollbar>
     </section>
     <queue-playlist />
     <player-component />
@@ -36,6 +38,10 @@ $additional-width: $sidebar-width + $queue-playlist-width;
   margin-left: $sidebar-width;
   width: calc(100% - #{$additional-width});
   transition: width 0.3s;
+
+  & > .ps {
+    height: 100vh;
+  }
   @include media('<large', '>medium') {
     width: calc(100% - #{$sidebar-width}) !important;
   }
