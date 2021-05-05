@@ -52,7 +52,7 @@ export default {
           <img :src="album.thumbnailM" alt="cover" />
           <div class="overlay" :class="{ 'is-playing': isPlaying }">
             <div class="center">
-              <button class="btn border" @click="togglePlay">
+              <button class="btn border" @click="playPlaylist(album, true)">
                 <i
                   class="icon"
                   :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"

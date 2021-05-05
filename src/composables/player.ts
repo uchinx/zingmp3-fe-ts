@@ -73,12 +73,8 @@ export default function usePlayer(
     currentSongId: computed(() => player.currentSong.encodeId),
     currentPlaylist: computed(() => player.currentPlaylist),
     currentPlaylistId: computed(() => player.currentPlaylist.encodeId),
-    queues: computed(() => {
-      if (player.isShuffle) {
-        return player.queues
-      }
-      return player.queues
-    }),
+    queues: computed(() => player.queues),
+    recentItems: computed(() => player.recentItems),
     Player: player,
     currentDuration,
     progress,

@@ -79,17 +79,29 @@ export default {
     <div class="queue">
       <div class="list">
         <div
-          v-for="(item, index) in items"
+          v-for="(item, index) in recentItems"
           :key="'item' + index"
           class="item"
-          :class="{ 'is-active': item.is_active }"
+          :class="{ 'is-active': item.encodeId === currentSongId }"
         >
           <div class="left">
             <img :src="item.thumbnail" alt="thumbnail" />
           </div>
           <div class="right">
-            <div class="name">{{ item.name }}</div>
-            <div class="artists">{{ item.artists.join(', ') }}</div>
+            <div class="name">{{ item.title }}</div>
+            <div class="artists">
+              <template
+                  v-for="(artist, index) in item.artists"
+                  :key="'artist' + index"
+                >
+                  <a href="#">
+                    {{ artist.name
+                    }}<span v-if="index !== item.artists.length - 1"
+                      >,
+                    </span>
+                  </a>
+                </template>
+            </div>
           </div>
           <div class="cover"></div>
         </div>

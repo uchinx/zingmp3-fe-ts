@@ -12,6 +12,8 @@ const store = createStore({
         return true
       },
     }),
+    queueItems: [],
+    recentItems: []
   },
   mutations: mutations,
 })
