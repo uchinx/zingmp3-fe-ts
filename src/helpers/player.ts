@@ -81,7 +81,8 @@ class Player {
 
   get currentPlaylistItems(): Song[] {
     if (this.currentPlaylist && Array.isArray(this.currentPlaylist.song.items)) {
-      return this.currentPlaylist.song.items.filter(item => item.encodeId !== this.currentSongId)
+      const ids = this.recentItems.map(item => item.encodeId)
+      return this.currentPlaylist.song.items.filter(item => !ids.includes(item.encodeId))
     }
     return []
   }

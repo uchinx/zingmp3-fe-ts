@@ -1,20 +1,33 @@
 <script lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { usePlayer } from '@/composables'
 import QueueSong from './song/queue.vue'
 export default {
   components: { QueueSong },
   setup() {
     const current = ref('playing')
+    const scrollEle = ref()
+    const isSticky = ref(false)
     const player = usePlayer()
-    return { current, ...player }
+
+    onMounted(() => {
+      const ele = document.querySelector('aside > .ps')
+      ele.addEventListener('ps-scroll-y', () => {
+      if (ele.scrollTop > 10) {
+        isSticky.value = true
+      } else {
+        isSticky.value = false
+      }
+    })
+    })
+    return { current, ...player, isSticky, scrollEle }
   },
 }
 </script>
 <template>
   <aside>
-    <perfect-scrollbar>
-      <div class="header">
+    <perfect-scrollbar :ref="scrollEle">
+      <div class="header" :class="{ 'is-sticky': isSticky }">
         <div class="tab">
           <button
             @click="current = 'playing'"
@@ -43,8 +56,8 @@ export default {
       <div class="playlist">
         <div class="list">
           <queue-song
-            v-for="(item, index) in recentItems"
-            :key="'item' + index"
+            v-for="(item) in recentItems"
+            :key="item.encodeId"
             :is-active="item.encodeId === currentSongId"
             :song="item"
             :overlay="true"
@@ -58,8 +71,8 @@ export default {
           </div>
           <div class="list">
             <queue-song
-              v-for="(item, index) in queues"
-              :key="'item' + index"
+              v-for="(item) in queues"
+              :key="item.encodeId"
               :class="{ 'is-active': item.is_active }"
               :song="item"
             ></queue-song>
@@ -94,6 +107,14 @@ aside {
     display: flex;
     align-items: center;
     padding: 0 10px;
+    background: var(--background);
+    z-index: 1111;
+    &.is-sticky {
+      background: var(--background);
+      box-shadow: 0 3px 5px var(--sticky-header-box-shadow);
+      position: sticky;
+      top: 0;
+    }
     .tab {
       flex: 1 1;
       display: flex;
@@ -129,7 +150,7 @@ aside {
   }
 }
 .playlist {
-  padding: 0 8px;
+  padding: 8px;
 }
 .next-up {
   margin-top: 15px;
