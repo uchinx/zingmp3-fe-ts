@@ -1,32 +1,49 @@
 <script lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, provide, watch } from 'vue'
 import { usePlayer } from '@/composables'
 import QueueSong from './song/queue.vue'
 export default {
   components: { QueueSong },
   setup() {
     const current = ref('playing')
-    const scrollEle = ref()
+    const scrollbar = ref()
+    const recent = ref()
     const isSticky = ref(false)
     const player = usePlayer()
 
-    onMounted(() => {
-      const ele = document.querySelector('aside > .ps')
-      ele.addEventListener('ps-scroll-y', () => {
-      if (ele.scrollTop > 10) {
+    watch(player.currentSongId, (id: string) => {
+      setTimeout(() => {
+        const target: any = Array.from(recent.value.children).find((ele: any) =>
+          ele.classList.contains('active')
+        )
+        if (target) {
+          const ele = scrollbar.value.$el
+          let y = target.offsetTop - target.offsetHeight * 2.5
+          if (y < 0) y = 0
+          ele.scroll({
+            behavior: 'smooth',
+            left: 0,
+            top: y,
+          })
+        }
+      }, 500)
+    })
+
+    function handleScroll(ev: any) {
+      const target = ev.target
+      if (target.scrollTop > 10) {
         isSticky.value = true
       } else {
         isSticky.value = false
       }
-    })
-    })
-    return { current, ...player, isSticky, scrollEle }
+    }
+    return { current, ...player, isSticky, scrollbar, handleScroll, recent }
   },
 }
 </script>
 <template>
   <aside>
-    <perfect-scrollbar :ref="scrollEle">
+    <perfect-scrollbar @ps-scroll-y="handleScroll" ref="scrollbar">
       <div class="header" :class="{ 'is-sticky': isSticky }">
         <div class="tab">
           <button
@@ -54,9 +71,9 @@ export default {
         </div>
       </div>
       <div class="playlist">
-        <div class="list">
+        <div class="list" ref="recent">
           <queue-song
-            v-for="(item) in recentItems"
+            v-for="item in recentItems"
             :key="item.encodeId"
             :is-active="item.encodeId === currentSongId"
             :song="item"
@@ -71,7 +88,7 @@ export default {
           </div>
           <div class="list">
             <queue-song
-              v-for="(item) in queues"
+              v-for="item in queues"
               :key="item.encodeId"
               :class="{ 'is-active': item.is_active }"
               :song="item"
@@ -150,7 +167,7 @@ aside {
   }
 }
 .playlist {
-  padding: 8px;
+  padding: 8px 8px 100px 8px;
 }
 .next-up {
   margin-top: 15px;

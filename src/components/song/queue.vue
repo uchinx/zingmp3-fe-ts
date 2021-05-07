@@ -1,6 +1,6 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
-import { computed } from '@vue/runtime-core'
+import { computed, inject, onMounted, ref } from 'vue'
 export default {
   props: {
     song: {
@@ -17,18 +17,20 @@ export default {
   },
   setup({ song }) {
     const player = usePlayer()
+    const ele = ref()
     const isCurrent = computed(() => player.currentSongId.value === song.encodeId)
     const isPlaying = computed(() => player.isPlaying.value && isCurrent.value)
     return {
       ...player,
       isPlaying,
       isCurrent,
+      ele,
     }
   },
 }
 </script>
 <template>
-  <div class="queue" :class="{ active: isActive, playing: isPlaying }" @dblclick="playSong(song)">
+  <div class="queue" :class="{ active: isActive, playing: isPlaying }" @dblclick="playSong(song)" ref="ele">
     <figure class="left" @click="playSong(song)">
       <img :src="song.thumbnail" alt="thumbnail" />
       <div class="overlay">

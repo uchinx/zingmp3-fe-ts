@@ -53,7 +53,7 @@ $additional-width: $sidebar-width + $queue-playlist-width;
   min-width: 720px;
 }
 .wrapper {
-  padding: 42px 45px 42px 58px;
+  padding: 42px 45px 100px 58px;
   @include media('<large') {
     padding: 20px 38px !important;
   }

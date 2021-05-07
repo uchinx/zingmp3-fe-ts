@@ -3,6 +3,7 @@ import { computed, watch, ref } from 'vue'
 import { useStore } from 'vuex'
 import Player from '@/helpers/player'
 import { fetchStreaming } from '@/api'
+import { cloneDeep } from 'lodash-es'
 const QUALITY = '128'
 
 export default function usePlayer(
@@ -31,7 +32,7 @@ export default function usePlayer(
         player.initialize(result.data[QUALITY], true)
       }
       if (playlist && player.currentPlaylistId !== playlist.encodeId) {
-        player.currentPlaylist = playlist
+        player.currentPlaylist = cloneDeep(playlist)
         if (isShuffle) {
           player.isShuffle = true
         }

@@ -17,11 +17,20 @@ class Player {
   public currentPlaylistId: string
   public duration: number = 0
   public isShuffle: boolean = false
-  
+
   constructor() {
     this.subscribe('currentPlaylist', (val: Playlist) => {
       if (val) {
         this.currentPlaylistId = val.encodeId
+        if (
+          this.currentSongId &&
+          Array.isArray(this.currentPlaylist.song.items)
+        ) {
+          const index = this.currentPlaylist.song.items.findIndex(
+            (song) => song.encodeId === this.currentSongId
+          )
+          this.currentPlaylist.song.items.splice(0, index)
+        }
         this.queues = this.currentPlaylistItems
       }
     })
@@ -80,9 +89,14 @@ class Player {
   }
 
   get currentPlaylistItems(): Song[] {
-    if (this.currentPlaylist && Array.isArray(this.currentPlaylist.song.items)) {
-      const ids = this.recentItems.map(item => item.encodeId)
-      return this.currentPlaylist.song.items.filter(item => !ids.includes(item.encodeId))
+    if (
+      this.currentPlaylist &&
+      Array.isArray(this.currentPlaylist.song.items)
+    ) {
+      const ids = this.recentItems.map((item) => item.encodeId)
+      return this.currentPlaylist.song.items.filter(
+        (item) => !ids.includes(item.encodeId)
+      )
     }
     return []
   }
@@ -100,11 +114,13 @@ class Player {
   }
 
   set currentSong(song: Song) {
-    let index = this.queues.findIndex(item => item.encodeId === song.encodeId)
+    let index = this.queues.findIndex((item) => item.encodeId === song.encodeId)
     if (index >= 0) {
       this.queues.splice(index, 1)
     }
-    index = this.recentItems.findIndex(item => item.encodeId === song.encodeId)
+    index = this.recentItems.findIndex(
+      (item) => item.encodeId === song.encodeId
+    )
     if (index >= 0) {
       this.recentItems.splice(index, 1)
     }
