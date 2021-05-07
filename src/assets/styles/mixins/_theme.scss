@@ -10,6 +10,8 @@
   $tab-active,
   $banner-home-dot,
   $sticky-header-box-shadow,
+  $progress,
+  $progress-bg,
   $logo: 'light'
 ) {
   #{--primary}: $primary;
@@ -23,6 +25,8 @@
   #{--tab-active}: $tab-active;
   #{--banner-home-dot}: $banner-home-dot;
   #{--sticky-header-box-shadow}: $sticky-header-box-shadow;
+  #{--progress-bg}: $progress-bg;
+  #{--progress}: $progress;
 
   @if $logo == 'dark' {
     #{--logo-url}: url('https://zmp3-static.zadn.vn/skins/zmp3-v6.1/images/backgrounds/logo-dark.svg');

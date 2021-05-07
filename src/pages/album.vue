@@ -1,7 +1,7 @@
 <script lang="ts">
 import SongInline from '@/components/song/inline.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchAlbum } from '@/api'
+import { fetchPlaylist } from '@/api'
 import { computed, onMounted, provide, ref } from 'vue'
 import { usePlayer } from '@/composables'
 export default {
@@ -15,7 +15,7 @@ export default {
     const isLiked = ref(false)
 
     onMounted(async () => {
-      const result = await fetchAlbum(<string>id)
+      const result = await fetchPlaylist(<string>id)
       if (result && result.data) {
         album.value = result.data
       } else {
@@ -52,7 +52,7 @@ export default {
           <img :src="album.thumbnailM" alt="cover" />
           <div class="overlay" :class="{ 'is-playing': isPlaying }">
             <div class="center">
-              <button class="btn border" @click="togglePlay">
+              <button class="btn border" @click="playPlaylist(album, true)">
                 <i
                   class="icon"
                   :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"
@@ -76,7 +76,7 @@ export default {
           </div>
           <div class="md-action">
             <div class="action">
-              <button class="btn zing" @click="playPlaylist(album)">
+              <button class="btn zing" @click="playPlaylist(album, true)">
                 <div class="d-flex" v-if="isPlaying">
                   <i class="icon ic-pause"></i>
                   <span>{{ $t('pause') }}</span>

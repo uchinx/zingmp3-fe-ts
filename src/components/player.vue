@@ -1,14 +1,15 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
-import { onMounted } from '@vue/runtime-core'
 import { displayDuration } from '@/helpers/utils'
+import { useStore } from 'vuex'
+import { ref, watch } from 'vue'
 export default {
   setup() {
     const player = usePlayer({ watch: true })
-    onMounted(() => {
-      console.log(player)
-    })
-    return { ...player, displayDuration }
+    return {
+      ...player,
+      displayDuration,
+    }
   },
 }
 </script>
@@ -32,7 +33,9 @@ export default {
             >
               <a href="#">
                 {{ artist.name
-                }}<span v-if="index !== currentSong.artists.length - 1">, </span>
+                }}<span v-if="index !== currentSong.artists.length - 1"
+                  >,
+                </span>
               </a>
             </template>
           </div>
@@ -51,7 +54,7 @@ export default {
     <div class="player">
       <div class="control">
         <div class="center">
-          <button class="btn">
+          <button class="btn" :class="{ active: isShuffle }" @click="toggleShuffle">
             <i class="icon ic-shuffle"></i></button
           ><button class="btn">
             <i class="icon ic-pre"></i></button
@@ -70,13 +73,22 @@ export default {
         </div>
       </div>
       <div class="timer" v-if="currentSong.encodeId">
-        <div class="current-duration">01:22</div>
-        <div class="progress-bar">
+        <div class="current-duration">
+          {{ displayDuration(currentDuration, 2) }}
+        </div>
+        <div
+          class="progress-bar"
+          ref="progressRef"
+          @mousedown="handleSeek"
+          @click="handleSeek"
+        >
           <div class="progress-bg">
-            <div class="progress"></div>
+            <div class="progress" :style="{ width: progress + '%' }"></div>
           </div>
         </div>
-        <div class="total-duration">{{ displayDuration(currentSong.duration, 2) }}</div>
+        <div class="total-duration">
+          {{ displayDuration(currentSong.duration, 2) }}
+        </div>
       </div>
     </div>
     <div class="right-control">
@@ -171,35 +183,64 @@ export default {
         &.play > i {
           font-size: 40px;
         }
+        &.active {
+          color: var(--primary);
+        }
       }
     }
     .timer {
       margin: 4px;
       display: flex;
       align-items: center;
+      user-select: none;
       .current-duration,
       .total-duration {
         padding: 0 14px;
         font-size: 12px;
+        min-width: 60px;
       }
       .progress-bar {
         width: 100%;
         height: 15px;
         display: flex;
         align-items: center;
+        cursor: pointer;
+        &:hover {
+          .progress::after {
+            visibility: visible !important;
+          }
+          .progress-bg {
+            height: 4px;
+          }
+        }
+        & * {
+          pointer-events: none;
+        }
         .progress-bg {
           width: 100%;
           height: 3px;
           position: relative;
-          background: var(--alpha-bg);
+          background: var(--progress-bg);
         }
         .progress {
           position: absolute;
           left: 0;
           top: 0;
-          width: 40%;
-          height: 3px;
-          background: var(--primary);
+          height: 100%;
+          background: var(--progress);
+          &::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 100%;
+            z-index: 11111;
+            background: var(--progress);
+            box-shadow: 0px 0px 2px 1px #0008;
+            visibility: hidden;
+          }
         }
       }
     }
@@ -252,11 +293,3 @@ export default {
   }
 }
 </style>
-
-  function usePlayer() {
-    throw new Error('Function not implemented.')
-  }
-
-  function usePlayer() {
-    throw new Error('Function not implemented.')
-  }

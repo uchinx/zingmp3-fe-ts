@@ -1,84 +1,85 @@
 <script lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { usePlayer } from '@/composables'
+import QueueSong from './song/queue.vue'
 export default {
+  components: { QueueSong },
   setup() {
     const current = ref('playing')
-    const items = [{
-      name: 'Let Her go',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/b/8/b892777a7b309b6f9f85cfca17e65c9c_1334993877.jpg',
-      artists: ['Passenger']
-    }, {
-      name: 'Marry You',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/9/4/94988ad7edf7e749e7117188a09160de_1288751887.jpg',
-      artists: ['Bruno Mars']
-    }, {
-      name: 'Because I Love You',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/avatars/9/f/9fe66b65ff8aa87a19607e35ba54e464_1298545783.jpg',
-      artists: ['Shakin\' Stevens']
-    }, {
-      name: 'My Love',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/9/5/95680cac41bafb8d12b506c4140af63f_1302606184.jpg',
-      artists: ['Westlife']
-    }, {
-      name: 'No Promises',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/d/b/db9e5d42c9372e69b3c1b252ed9b0833_1293122686.jpg',
-      artists: ['Shayne Ward']
-    }, {
-      name: 'Yesterday Once More',
-      thumbnail: 'https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/covers/7/0/7014824a73ba9e48258e1fdd40c56fdc_1328009644.jpg',
-      artists: ['Yao Si Ting'],
-      is_active: true
-    }]
-    return { current, items }
-  }
+    const scrollEle = ref()
+    const isSticky = ref(false)
+    const player = usePlayer()
+
+    onMounted(() => {
+      const ele = document.querySelector('aside > .ps')
+      ele.addEventListener('ps-scroll-y', () => {
+      if (ele.scrollTop > 10) {
+        isSticky.value = true
+      } else {
+        isSticky.value = false
+      }
+    })
+    })
+    return { current, ...player, isSticky, scrollEle }
+  },
 }
 </script>
 <template>
   <aside>
-    <div class="header">
-      <div class="tab">
-        <button @click="current = 'playing'" class="btn" :class="{ current: current === 'playing' }">{{ $t('playlist') }}</button>
-        <button @click="current = 'listen_recently'" class="btn" :class="{ current: current === 'listen_recently' }">{{ $t('listen_recently') }}</button>
-      </div>
-      <div class="others">
-        <button class="rounded btn alarm is-active">
-          <i class="ic-clock"></i>
-        </button>
-        <button class="rounded btn">
-          <i class="ic-more"></i>
-        </button>
-      </div>
-    </div>
-    <div class="queue">
-      <div class="list">
-        <div v-for="(item, index) in items" :key="'item' + index" class="item" :class="{ 'is-active': item.is_active }">
-          <div class="left">
-            <img :src="item.thumbnail" alt="thumbnail">
-          </div>
-          <div class="right">
-            <div class="name">{{ item.name }}</div>
-            <div class="artists">{{ item.artists.join(', ') }}</div>
-          </div>
-          <div class="cover"></div>
+    <perfect-scrollbar :ref="scrollEle">
+      <div class="header" :class="{ 'is-sticky': isSticky }">
+        <div class="tab">
+          <button
+            @click="current = 'playing'"
+            class="btn"
+            :class="{ current: current === 'playing' }"
+          >
+            {{ $t('playlist') }}
+          </button>
+          <button
+            @click="current = 'listen_recently'"
+            class="btn"
+            :class="{ current: current === 'listen_recently' }"
+          >
+            {{ $t('listen_recently') }}
+          </button>
+        </div>
+        <div class="others">
+          <button class="rounded btn alarm is-active">
+            <i class="ic-clock"></i>
+          </button>
+          <button class="rounded btn">
+            <i class="ic-more"></i>
+          </button>
         </div>
       </div>
-      <div class="next-up">
-        <div class="text-title">{{ $t('next_up') }}</div>
-        <div class="from">{{ $t('from_playlist') }} <a href="#" class="text-primary">Radio Westlife</a></div>
+      <div class="playlist">
         <div class="list">
-        <div v-for="(item, index) in items" :key="'item' + index" class="item" :class="{ 'is-active': item.is_active }">
-          <div class="left">
-            <img :src="item.thumbnail" alt="thumbnail">
+          <queue-song
+            v-for="(item) in recentItems"
+            :key="item.encodeId"
+            :is-active="item.encodeId === currentSongId"
+            :song="item"
+            :overlay="true"
+          ></queue-song>
+        </div>
+        <div class="next-up">
+          <div class="text-title">{{ $t('next_up') }}</div>
+          <div class="from" v-if="currentPlaylist">
+            {{ $t('from_playlist') }}
+            <a href="#" class="text-primary">{{ currentPlaylist.title }}</a>
           </div>
-          <div class="right">
-            <div class="name">{{ item.name }}</div>
-            <div class="artists">{{ item.artists.join(', ') }}</div>
+          <div class="list">
+            <queue-song
+              v-for="(item) in queues"
+              :key="item.encodeId"
+              :class="{ 'is-active': item.is_active }"
+              :song="item"
+            ></queue-song>
           </div>
-          <div class="cover"></div>
         </div>
       </div>
-      </div>
-    </div>
+    </perfect-scrollbar>
   </aside>
 </template>
 
@@ -92,7 +93,11 @@ aside {
   position: fixed;
   border-left: 1px solid var(--border-color);
   background: var(--background);
-  transition: right .3s;
+  transition: right 0.3s;
+  & > .ps {
+    height: 100vh;
+  }
+  // overflow-y: auto;
   @include media('<large') {
     right: -$queue-playlist-width !important;
   }
@@ -102,6 +107,14 @@ aside {
     display: flex;
     align-items: center;
     padding: 0 10px;
+    background: var(--background);
+    z-index: 1111;
+    &.is-sticky {
+      background: var(--background);
+      box-shadow: 0 3px 5px var(--sticky-header-box-shadow);
+      position: sticky;
+      top: 0;
+    }
     .tab {
       flex: 1 1;
       display: flex;
@@ -136,56 +149,8 @@ aside {
     }
   }
 }
-.queue {
-  padding: 0 8px;
-  .item {
-    padding: 8px;
-    display: flex;
-    border-radius: 4px;
-    position: relative;
-    &.is-active {
-      background: var(--primary) !important;
-      color: #fff;
-      .artists {
-        color: #ddd !important;
-      }
-    }
-    &:not(.is-active) .cover {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--background);
-      opacity: .5;
-    }
-    &:hover {
-      background: var(--alpha-bg);
-      .cover {
-        opacity: 0 !important;
-        z-index: -1;
-      }
-    }
-    .left {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      img {
-        border-radius: 4px;
-      }
-    }
-    .right {
-      padding-left: 10px;
-      .name {
-        font-weight: 600;
-      }
-      .artists {
-        margin-top: 5px;
-        font-size: 12px;
-        color: var(--text-secondary);
-      }
-    }
-  }
+.playlist {
+  padding: 8px;
 }
 .next-up {
   margin-top: 15px;

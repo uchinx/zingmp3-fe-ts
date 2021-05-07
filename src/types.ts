@@ -1,4 +1,5 @@
-import { ComputedRef, WritableComputedRef } from '@vue/reactivity'
+import { ComputedRef, Ref, WritableComputedRef } from '@vue/reactivity'
+import Player from './helpers/player';
 
 export interface NavBar {
   title: string
@@ -72,14 +73,19 @@ export interface Artist {
   spotlight: boolean
 }
 
-export interface Player {
+export interface UsePlayer {
   [key: string]: any
-  isPlaying: WritableComputedRef<boolean>
-  currentSong: WritableComputedRef<Song>
+  isPlaying: ComputedRef<boolean>
+  isShuffle: ComputedRef<boolean>
+  currentSong: ComputedRef<Song>
   currentSongId: ComputedRef<string>
-  currentPlaylist: WritableComputedRef<Playlist>
+  currentPlaylist: ComputedRef<Playlist>
   currentPlaylistId: ComputedRef<string>
-  playSong(id: Song, playlist?: Playlist): void
-  playPlaylist(playlist: Playlist): void
+  currentDuration: Ref<number>
+  progress: Ref<number>
+  progressRef: Ref<any>
+  Player: Player
+  playSong(id: Song, playlist?: Playlist, isShuffle?: boolean): void
+  playPlaylist(playlist: Playlist, isShuffle?: boolean): void
   togglePlay(): void
 }

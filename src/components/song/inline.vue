@@ -104,6 +104,7 @@ export default {
       border-radius: 4px;
       overflow: hidden;
       position: relative;
+      display: inline-flex;
       img {
         width: 100%;
       }
