@@ -16,14 +16,16 @@ export default {
     })
 
     onMounted(() => {
-      const ele = document.querySelector('.default-layout > .content > .ps')
-      ele.addEventListener('ps-scroll-y', () => {
-        if (ele.scrollTop > 10) {
-          isSticky.value = true
-        } else {
-          isSticky.value = false
-        }
-      })
+      setTimeout(() => {
+        const ele = document.querySelector('.default-layout > .content > .ps')
+        ele.addEventListener('ps-scroll-y', () => {
+          if (ele.scrollTop > 10) {
+            isSticky.value = true
+          } else {
+            isSticky.value = false
+          }
+        })
+      }, 1000)
       window.addEventListener('popstate', (ev) => {
         historyState.value = ev.state
       })
@@ -47,7 +49,11 @@ export default {
 <template>
   <header :class="{ 'is-sticky': isSticky }">
     <div class="navigation">
-      <button @click="routerBack" class="btn" :disabled="historyState && !historyState.back">
+      <button
+        @click="routerBack"
+        class="btn"
+        :disabled="historyState && !historyState.back"
+      >
         <i class="ic-back"></i>
       </button>
       <button

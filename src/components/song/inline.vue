@@ -33,7 +33,7 @@ export default {
 <template>
   <div class="song" :class="{ 'is-playing': isPlaying, 'is-current': isCurrent }" @dblclick="playSong(song, album)">
     <div class="left">
-      <figure class="thumbnail" @click="playSong(song, album)">
+      <figure class="thumbnail" @click.stop="playSong(song, album)">
         <img :src="song.thumbnail" alt="thumbnail" />
         <div class="overlay">
           <div class="center">

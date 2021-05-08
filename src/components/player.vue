@@ -1,20 +1,58 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
 import { displayDuration } from '@/helpers/utils'
-import { useStore } from 'vuex'
 import { ref, watch } from 'vue'
+import ProgressBar from '@/components/globals/progress-bar.vue'
 export default {
+  components: { ProgressBar },
   setup() {
     const player = usePlayer({ watch: true })
+    const volume = ref(50)
+    const isMute = ref(false)
+    let _volume: any = null
+
+    watch(volume, (val) => {
+      if (val !== 0) {
+        _volume = val
+      }
+      player.volume(val / 100)
+    })
+
+    watch(isMute, val => {
+      if (val) {
+        volume.value = 0
+      } else {
+        volume.value = _volume
+      }
+    })
+
+
+    function toggleQueuePlaylist() {
+      player.isShowQueuePlaylist.value = !player.isShowQueuePlaylist.value
+    }
+
+    function handleChangeDuration(percent: number) {
+      player.seek(percent / 100 * player.duration())
+    }
+
+    function handleProcessDuration(percent: number) {
+      player.currentDuration.value = percent / 100 * player.duration()
+    }
+
     return {
       ...player,
       displayDuration,
+      toggleQueuePlaylist,
+      volume,
+      handleChangeDuration,
+      handleProcessDuration,
+      isMute,
     }
   },
 }
 </script>
 <template>
-  <div class="wrapper-player">
+  <div class="wrapper-player" @click.stop>
     <div class="song-detail">
       <figure class="thumbnail">
         <img
@@ -54,7 +92,11 @@ export default {
     <div class="player">
       <div class="control">
         <div class="center">
-          <button class="btn" :class="{ active: isShuffle }" @click="toggleShuffle">
+          <button
+            class="btn"
+            :class="{ active: isShuffle }"
+            @click="toggleShuffle"
+          >
             <i class="icon ic-shuffle"></i></button
           ><button class="btn">
             <i class="icon ic-pre"></i></button
@@ -76,16 +118,12 @@ export default {
         <div class="current-duration">
           {{ displayDuration(currentDuration, 2) }}
         </div>
-        <div
-          class="progress-bar"
-          ref="progressRef"
-          @mousedown="handleSeek"
-          @click="handleSeek"
-        >
-          <div class="progress-bg">
-            <div class="progress" :style="{ width: progress + '%' }"></div>
-          </div>
-        </div>
+        <progress-bar
+          v-model:percent="progress"
+          @change="handleChangeDuration"
+          @progress="handleProcessDuration"
+          :busy-while-progress="true"
+        />
         <div class="total-duration">
           {{ displayDuration(currentSong.duration, 2) }}
         </div>
@@ -96,15 +134,19 @@ export default {
         <button class="btn"><i class="icon ic-mv"></i></button>
         <button class="btn"><i class="icon ic-karaoke"></i></button>
         <div class="volume">
-          <button class="btn"><i class="icon ic-volume"></i></button>
-          <div class="progress-bar">
-            <div class="progress-bg">
-              <div class="progress"></div>
-            </div>
-          </div>
+          <button class="btn" @click="isMute = !isMute"><i class="icon ic-volume"></i></button>
+          <progress-bar
+            v-model:percent="volume"
+          />
         </div>
         <div class="show-list-btn">
-          <button class="btn"><i class="icon ic-list-music"></i></button>
+          <button
+            class="btn"
+            :class="{ active: isShowQueuePlaylist }"
+            @click="toggleQueuePlaylist"
+          >
+            <i class="icon ic-list-music"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -183,9 +225,6 @@ export default {
         &.play > i {
           font-size: 40px;
         }
-        &.active {
-          color: var(--primary);
-        }
       }
     }
     .timer {
@@ -198,50 +237,6 @@ export default {
         padding: 0 14px;
         font-size: 12px;
         min-width: 60px;
-      }
-      .progress-bar {
-        width: 100%;
-        height: 15px;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        &:hover {
-          .progress::after {
-            visibility: visible !important;
-          }
-          .progress-bg {
-            height: 4px;
-          }
-        }
-        & * {
-          pointer-events: none;
-        }
-        .progress-bg {
-          width: 100%;
-          height: 3px;
-          position: relative;
-          background: var(--progress-bg);
-        }
-        .progress {
-          position: absolute;
-          left: 0;
-          top: 0;
-          height: 100%;
-          background: var(--progress);
-          &::after {
-            content: '';
-            position: absolute;
-            right: -6px;
-            top: -4px;
-            width: 12px;
-            height: 12px;
-            border-radius: 100%;
-            z-index: 11111;
-            background: var(--progress);
-            box-shadow: 0px 0px 2px 1px #0008;
-            visibility: hidden;
-          }
-        }
       }
     }
   }
@@ -290,6 +285,11 @@ export default {
         border-left: 1px solid var(--alpha-bg);
       }
     }
+  }
+}
+.btn {
+  &.active {
+    color: var(--primary);
   }
 }
 </style>

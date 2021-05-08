@@ -82,10 +82,13 @@ export interface UsePlayer {
   currentPlaylist: ComputedRef<Playlist>
   currentPlaylistId: ComputedRef<string>
   currentDuration: Ref<number>
+  isShowQueuePlaylist: WritableComputedRef<boolean>
   progress: Ref<number>
   progressRef: Ref<any>
   Player: Player
   playSong(id: Song, playlist?: Playlist, isShuffle?: boolean): void
   playPlaylist(playlist: Playlist, isShuffle?: boolean): void
   togglePlay(): void
+  volume(val: number): void
+  seek(val: number): void
 }

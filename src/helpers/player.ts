@@ -22,6 +22,7 @@ class Player {
     this.subscribe('currentPlaylist', (val: Playlist) => {
       if (val) {
         this.currentPlaylistId = val.encodeId
+        this.recentItems = []
         if (
           this.currentSongId &&
           Array.isArray(this.currentPlaylist.song.items)

@@ -13,7 +13,9 @@ const store = createStore({
       },
     }),
     queueItems: [],
-    recentItems: []
+    recentItems: [],
+    isShowQueuePlaylist: false,
+    isProgressBusy: false
   },
   mutations: mutations,
 })

@@ -52,7 +52,7 @@ export default {
           <img :src="album.thumbnailM" alt="cover" />
           <div class="overlay" :class="{ 'is-playing': isPlaying }">
             <div class="center">
-              <button class="btn border" @click="playPlaylist(album, true)">
+              <button class="btn border" @click.stop="playPlaylist(album, true)">
                 <i
                   class="icon"
                   :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"
@@ -76,7 +76,7 @@ export default {
           </div>
           <div class="md-action">
             <div class="action">
-              <button class="btn zing" @click="playPlaylist(album, true)">
+              <button class="btn zing" @click.stop="playPlaylist(album, true)">
                 <div class="d-flex" v-if="isPlaying">
                   <i class="icon ic-pause"></i>
                   <span>{{ $t('pause') }}</span>

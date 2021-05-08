@@ -1,7 +1,8 @@
 <script lang="ts">
-import { ref, onMounted, provide, watch } from 'vue'
+import { ref, onMounted, provide, watch, computed } from 'vue'
 import { usePlayer } from '@/composables'
 import QueueSong from './song/queue.vue'
+import { useStore } from 'vuex'
 export default {
   components: { QueueSong },
   setup() {
@@ -11,7 +12,7 @@ export default {
     const isSticky = ref(false)
     const player = usePlayer()
 
-    watch(player.currentSongId, (id: string) => {
+    watch(player.currentSongId, () => {
       setTimeout(() => {
         const target: any = Array.from(recent.value.children).find((ele: any) =>
           ele.classList.contains('active')
@@ -29,6 +30,19 @@ export default {
       }, 500)
     })
 
+    function clickAway() {
+      player.isShowQueuePlaylist.value = false
+    }
+    watch(player.isShowQueuePlaylist, (val) => {
+      if (val) {
+        setTimeout(() => {
+          document.addEventListener('click', clickAway)
+        }, 1000)
+      } else {
+        document.removeEventListener('click', clickAway)
+      }
+    })
+
     function handleScroll(ev: any) {
       const target = ev.target
       if (target.scrollTop > 10) {
@@ -37,12 +51,19 @@ export default {
         isSticky.value = false
       }
     }
-    return { current, ...player, isSticky, scrollbar, handleScroll, recent }
+    return {
+      current,
+      ...player,
+      isSticky,
+      scrollbar,
+      handleScroll,
+      recent,
+    }
   },
 }
 </script>
 <template>
-  <aside>
+  <aside :class="{ fixed: isShowQueuePlaylist }" @click.stop>
     <perfect-scrollbar @ps-scroll-y="handleScroll" ref="scrollbar">
       <div class="header" :class="{ 'is-sticky': isSticky }">
         <div class="tab">
@@ -111,12 +132,16 @@ aside {
   border-left: 1px solid var(--border-color);
   background: var(--background);
   transition: right 0.3s;
+  z-index: 1111;
   & > .ps {
     height: 100vh;
   }
   // overflow-y: auto;
   @include media('<large') {
     right: -$queue-playlist-width !important;
+  }
+  &.fixed {
+    right: 0 !important;
   }
   .header {
     width: 100%;
