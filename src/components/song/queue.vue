@@ -97,6 +97,7 @@ export default {
   }
   .left {
     width: 40px;
+    min-width: 40px;
     height: 40px;
     display: inline-flex;
     margin: 0;

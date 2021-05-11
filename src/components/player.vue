@@ -7,25 +7,8 @@ export default {
   components: { ProgressBar },
   setup() {
     const player = usePlayer({ watch: true })
-    const volume = ref(50)
-    const isMute = ref(false)
-    let _volume: any = null
 
-    watch(volume, (val) => {
-      if (val !== 0) {
-        _volume = val
-      }
-      player.volume(val / 100)
-    })
-
-    watch(isMute, val => {
-      if (val) {
-        volume.value = 0
-      } else {
-        volume.value = _volume
-      }
-    })
-
+    player.isMuted.value = false
 
     function toggleQueuePlaylist() {
       player.isShowQueuePlaylist.value = !player.isShowQueuePlaylist.value
@@ -43,10 +26,8 @@ export default {
       ...player,
       displayDuration,
       toggleQueuePlaylist,
-      volume,
       handleChangeDuration,
       handleProcessDuration,
-      isMute,
     }
   },
 }

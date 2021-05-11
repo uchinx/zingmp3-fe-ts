@@ -52,11 +52,6 @@ export default function usePlayer(
     toggleShuffle() {
       player.isShuffle = !player.isShuffle
     },
-    volume(val: number) {
-      if (player._howler) {
-        player._howler.volume(val)
-      }
-    },
     seek(val: number) {
       if (player._howler) {
         player._howler.seek(val)
@@ -69,14 +64,7 @@ export default function usePlayer(
       return 0
     },
     isPlaying: computed(() => player.isPlaying),
-    isShuffle: computed({
-      get(): boolean {
-        return player.isShuffle
-      },
-      set(val: boolean) {
-        player.isShuffle = val
-      },
-    }),
+    isShuffle: player.writableComputed('isShuffle'),
     isShowQueuePlaylist: computed({
       get(): boolean {
         return store.state.isShowQueuePlaylist
@@ -91,6 +79,8 @@ export default function usePlayer(
     currentPlaylistId: computed(() => player.currentPlaylist.encodeId),
     queues: computed(() => player.queues),
     recentItems: computed(() => player.recentItems),
+    volume: player.writableComputed('volume'),
+    isMuted: player.writableComputed('isMuted'),
     Player: player,
     currentDuration,
     progress,

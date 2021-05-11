@@ -2,6 +2,7 @@ import { Playlist, Song } from '@/types'
 import { Howl, Howler } from 'howler'
 import { shuffle } from 'lodash-es'
 import store from '@/store'
+import { computed, WritableComputedRef } from 'vue'
 interface Handler {
   (val: any, oldVal?: any): void
 }
@@ -11,12 +12,16 @@ class Player {
   private _isPlaying: boolean = false
   private _watchers: { [key: string]: [Handler] } = {}
   private _currentSong: Song = {} as Song
+  private _volume: number
+  private _volumeBeforeMuted: number
+  private _isMuted: boolean = false
 
   public currentPlaylist: Playlist = {} as Playlist
   public currentSongId: string
   public currentPlaylistId: string
   public duration: number = 0
   public isShuffle: boolean = false
+  public repeat: string = 'none'
 
   constructor() {
     this.subscribe('currentPlaylist', (val: Playlist) => {
@@ -69,6 +74,18 @@ class Player {
       }
     }
   }
+  writableComputed<T extends keyof Omit<Player, 'currentPlaylistItems'>>(
+    key: T
+  ): WritableComputedRef<Player[T]> {
+    return computed({
+      get: () => {
+        return this[key]
+      },
+      set: (val: any) => {
+        this[key] = val
+      },
+    })
+  }
   set isPlaying(val: boolean) {
     this._isPlaying = val
     if (val) {
@@ -87,6 +104,32 @@ class Player {
 
   set queues(val: Song[]) {
     store.commit('update', ['queueItems', val])
+  }
+
+  get volume(): number {
+    return this._volume
+  }
+
+  set volume(val: number) {
+    if (val !== 0) {
+      this._volumeBeforeMuted = val
+    }
+    this._volume = val
+    if (this._howler) {
+      this._howler.volume(val / 100)
+    }
+  }
+
+  get isMuted(): boolean {
+    return this._isMuted
+  }
+
+  set isMuted(val: boolean) {
+    if (val) {
+      this.volume = 0
+    } else {
+      this.volume = this._volumeBeforeMuted
+    }
   }
 
   get currentPlaylistItems(): Song[] {
@@ -129,22 +172,23 @@ class Player {
     this._currentSong = song
   }
 
-  initialize(url: string, autoPlay?: boolean) {
+  handleOnend(): void {
+    if (this.repeat === 'one') {
+    }
+  }
+
+  async initialize(url: string, autoPlay?: boolean) {
     Howler.unload()
     this._howler = new Howl({
       src: [url],
       html5: true,
       format: ['mp3'],
+      onend: this.handleOnend,
     })
     if (autoPlay) {
       this.isPlaying = true
       document.title = `${this.currentSong.title} - ${this.currentSong.artistsNames} | Zing MP3`
     }
-    this._howler.once('end', () => {
-      setTimeout(() => {
-        this.isPlaying = true
-      }, 1000)
-    })
   }
 }
 
