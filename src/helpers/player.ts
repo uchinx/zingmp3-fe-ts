@@ -1,78 +1,65 @@
 import { Playlist, Song } from '@/types'
 import { Howl, Howler } from 'howler'
-import { shuffle } from 'lodash-es'
-import store from '@/store'
-import { computed, WritableComputedRef } from 'vue'
-interface Handler {
-  (val: any, oldVal?: any): void
-}
-
+import { cloneDeep, shuffle } from 'lodash-es'
+import { computed, reactive, ref, watch, WritableComputedRef } from 'vue'
+import { getObject, saveObject } from './storage'
 class Player {
   public _howler: Howl = null
-  private _isPlaying: boolean = false
-  private _watchers: { [key: string]: [Handler] } = {}
-  private _currentSong: Song = {} as Song
-  private _volume: number
   private _volumeBeforeMuted: number
   private _isMuted: boolean = false
+  private _state = reactive({
+    volume: 50,
+    currentSong: {} as Song,
+    currentPlaylist: {} as Playlist,
+    queueItems: [],
+    recentItems: [],
+  })
 
-  public currentPlaylist: Playlist = {} as Playlist
+  private _reactivity = reactive({
+    isPlaying: false,
+  })
+
   public currentSongId: string
   public currentPlaylistId: string
   public duration: number = 0
-  public isShuffle: boolean = false
   public repeat: string = 'none'
+  public isProgressBusy: boolean = false
+
+  // Vue Reactivity
+  public isShowQueuePlaylist = ref(false)
+  public isShuffle = ref(false)
+  public progress = ref(0)
 
   constructor() {
-    this.subscribe('currentPlaylist', (val: Playlist) => {
-      if (val) {
-        this.currentPlaylistId = val.encodeId
-        this.recentItems = []
-        if (
-          this.currentSongId &&
-          Array.isArray(this.currentPlaylist.song.items)
-        ) {
-          const index = this.currentPlaylist.song.items.findIndex(
-            (song) => song.encodeId === this.currentSongId
-          )
-          this.currentPlaylist.song.items.splice(0, index)
-        }
-        this.queues = this.currentPlaylistItems
-      }
-    })
-    this.subscribe('currentSong', (val: Song) => {
-      if (val) {
-        this.currentSongId = val.encodeId
-      }
-    })
-    this.subscribe('isShuffle', (val: boolean) => {
+    this.volume = 50
+    const obj = getObject('Player')
+    if (obj) {
+      this._state = reactive(obj)
+    }
+    this._subscribe()
+    this.looper()
+  }
+  looper() {
+    if (this._howler && this.isPlaying && !this.isProgressBusy) {
+      const current = this._howler ? <number>this._howler.seek() : 0
+      const total = this._howler ? this._howler.duration() : 0
+      this.progress.value = current && total ? (current / total) * 100 : 0
+    }
+    setTimeout(() => {
+      this.looper()
+    }, 500)
+  }
+  _subscribe() {
+    watch(this.isShuffle, (val: boolean) => {
       if (val && this.currentPlaylistId) {
         this.queues = shuffle(this.currentPlaylistItems)
       } else {
         this.queues = this.currentPlaylistItems
       }
     })
-  }
-  subscribe(prop: string, cb: Handler) {
-    const handlers = this._watchers[prop]
-    if (Array.isArray(handlers)) {
-      handlers.push(cb)
-    } else {
-      this._watchers[prop] = [cb]
-    }
-  }
-  notify(prop: string, val: any, oldVal: any) {
-    const handlers = this._watchers[prop]
-    if (Array.isArray(handlers)) {
-      for (const handler of handlers) {
-        if (typeof handler === 'function') {
-          if (handler.length === 1) {
-            return handler(val)
-          }
-          return handler(val, oldVal)
-        }
-      }
-    }
+    watch(this._state, (val) => {
+      saveObject('Player', val)
+    })
   }
   writableComputed<T extends keyof Omit<Player, 'currentPlaylistItems'>>(
     key: T
@@ -86,35 +73,24 @@ class Player {
       },
     })
   }
-  set isPlaying(val: boolean) {
-    this._isPlaying = val
-    if (val) {
-      this._howler.play()
-    } else {
-      this._howler.pause()
-    }
-  }
-  get isPlaying() {
-    return this._isPlaying
-  }
 
   get queues(): Song[] {
-    return store.state.queueItems
+    return this._state.queueItems
   }
 
   set queues(val: Song[]) {
-    store.commit('update', ['queueItems', val])
+    this._state.queueItems = val
   }
 
   get volume(): number {
-    return this._volume
+    return this._state.volume
   }
 
   set volume(val: number) {
     if (val !== 0) {
       this._volumeBeforeMuted = val
     }
-    this._volume = val
+    this._state.volume = val
     if (this._howler) {
       this._howler.volume(val / 100)
     }
@@ -130,6 +106,7 @@ class Player {
     } else {
       this.volume = this._volumeBeforeMuted
     }
+    this._isMuted = val
   }
 
   get currentPlaylistItems(): Song[] {
@@ -146,18 +123,19 @@ class Player {
   }
 
   get recentItems(): Song[] {
-    return store.state.recentItems
+    return this._state.recentItems
   }
 
   set recentItems(val: Song[]) {
-    store.commit('update', ['recentItems', val])
+    this._state.recentItems = val
   }
 
   get currentSong(): Song {
-    return this._currentSong
+    return this._state.currentSong
   }
 
   set currentSong(song: Song) {
+    this.currentSongId = song.encodeId
     let index = this.queues.findIndex((item) => item.encodeId === song.encodeId)
     if (index >= 0) {
       this.queues.splice(index, 1)
@@ -169,10 +147,51 @@ class Player {
       this.recentItems.splice(index, 1)
     }
     this.recentItems.push(song)
-    this._currentSong = song
+    this._state.currentSong = song
+  }
+
+  get currentPlaylist(): Playlist {
+    return this._state.currentPlaylist
+  }
+
+  set currentPlaylist(playlist: Playlist) {
+    if (playlist) {
+      this._state.currentPlaylist = cloneDeep(playlist)
+      this.currentPlaylistId = playlist.encodeId
+      this.recentItems = []
+      if (
+        this.currentSongId &&
+        Array.isArray(this.currentPlaylist.song.items)
+      ) {
+        const index = this.currentPlaylist.song.items.findIndex(
+          (song) => song.encodeId === this.currentSongId
+        )
+        this.currentPlaylist.song.items.splice(-1, index)
+      }
+      this.queues = this.currentPlaylistItems
+    }
+  }
+
+  get isPlaying(): boolean {
+    return this._reactivity.isPlaying
+  }
+
+  set isPlaying(val: boolean) {
+    this._reactivity.isPlaying = val
+    if (this._howler) {
+      if (val) {
+        this._howler.play()
+      } else {
+        this._howler.pause()
+      }
+    }
   }
 
   handleOnend(): void {
+    this.isPlaying = false
+    setTimeout(() => {
+      this.isPlaying = true
+    }, 200)
     if (this.repeat === 'one') {
     }
   }
@@ -183,12 +202,23 @@ class Player {
       src: [url],
       html5: true,
       format: ['mp3'],
-      onend: this.handleOnend,
+      onend: this.handleOnend.bind(this),
     })
     if (autoPlay) {
       this.isPlaying = true
       document.title = `${this.currentSong.title} - ${this.currentSong.artistsNames} | Zing MP3`
     }
+  }
+  seek(percent: number) {
+    if (this._howler) {
+      this._howler.seek((percent / 100) * this._howler.duration())
+    }
+  }
+  calculateDuration(percent: number) {
+    if (this._howler) {
+      return (percent / 100) * this._howler.duration() || 0
+    }
+    return 0
   }
 }
 

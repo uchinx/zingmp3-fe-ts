@@ -1,25 +1,32 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
 import { displayDuration } from '@/helpers/utils'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import ProgressBar from '@/components/globals/progress-bar.vue'
 export default {
   components: { ProgressBar },
   setup() {
-    const player = usePlayer({ watch: true })
-
-    player.isMuted.value = false
+    const player = usePlayer()
+    const duration = ref(0)
 
     function toggleQueuePlaylist() {
-      player.isShowQueuePlaylist.value = !player.isShowQueuePlaylist.value
+      player.isShowQueuePlaylist.value = <any>!player.isShowQueuePlaylist.value
     }
 
     function handleChangeDuration(percent: number) {
-      player.seek(percent / 100 * player.duration())
+      player.Player.seek(percent)
     }
 
-    function handleProcessDuration(percent: number) {
-      player.currentDuration.value = percent / 100 * player.duration()
+    onMounted(() => {
+      watch(player.progress, (val: number) => {
+        if (player.Player) {
+          duration.value = player.Player.calculateDuration(val)
+        }
+      })
+    })
+
+    function handleMute() {
+      player.isMuted.value = !player.isMuted.value
     }
 
     return {
@@ -27,7 +34,8 @@ export default {
       displayDuration,
       toggleQueuePlaylist,
       handleChangeDuration,
-      handleProcessDuration,
+      handleMute,
+      duration,
     }
   },
 }
@@ -97,12 +105,11 @@ export default {
       </div>
       <div class="timer" v-if="currentSong.encodeId">
         <div class="current-duration">
-          {{ displayDuration(currentDuration, 2) }}
+          {{ displayDuration(duration, 2) }}
         </div>
         <progress-bar
           v-model:percent="progress"
           @change="handleChangeDuration"
-          @progress="handleProcessDuration"
           :busy-while-progress="true"
         />
         <div class="total-duration">
@@ -115,7 +122,7 @@ export default {
         <button class="btn"><i class="icon ic-mv"></i></button>
         <button class="btn"><i class="icon ic-karaoke"></i></button>
         <div class="volume">
-          <button class="btn" @click="isMute = !isMute"><i class="icon ic-volume"></i></button>
+          <button class="btn" @click="handleMute"><i class="icon ic-volume"></i></button>
           <progress-bar
             v-model:percent="volume"
           />

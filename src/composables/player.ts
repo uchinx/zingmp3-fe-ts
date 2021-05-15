@@ -1,24 +1,16 @@
 import { UsePlayer, Playlist } from '@/types'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useStore } from 'vuex'
 import Player from '@/helpers/player'
 import { fetchStreaming } from '@/api'
-import { cloneDeep } from 'lodash-es'
 const QUALITY = '128'
 
-export default function usePlayer(
-  option: {
-    watch?: boolean
-  } = {}
-): UsePlayer {
+export default function usePlayer(): UsePlayer {
   const store = useStore()
   const player: Player = store.state.player
-  const currentDuration = ref(0)
-  const progress = ref(0)
-  const progressRef = ref()
   const _player = <UsePlayer>{
     togglePlay() {
-      player.isPlaying = !player.isPlaying
+      _player.isPlaying.value = !_player.isPlaying.value
     },
     async playSong(song, playlist, isShuffle = false) {
       if (player.currentSongId === song.encodeId) {
@@ -27,9 +19,9 @@ export default function usePlayer(
       }
 
       if (playlist && player.currentPlaylistId !== playlist.encodeId) {
-        player.currentPlaylist = cloneDeep(playlist)
+        player.currentPlaylist = playlist
         if (isShuffle) {
-          player.isShuffle = true
+          _player.isShuffle.value = true
         }
       }
       const result = await fetchStreaming(song.encodeId)
@@ -50,53 +42,21 @@ export default function usePlayer(
       }
     },
     toggleShuffle() {
-      player.isShuffle = !player.isShuffle
+      _player.isShuffle.value = !_player.isShuffle.value
     },
-    seek(val: number) {
-      if (player._howler) {
-        player._howler.seek(val)
-      }
-    },
-    duration() {
-      if (player._howler) {
-        return player._howler.duration()
-      }
-      return 0
-    },
-    isPlaying: computed(() => player.isPlaying),
-    isShuffle: player.writableComputed('isShuffle'),
-    isShowQueuePlaylist: computed({
-      get(): boolean {
-        return store.state.isShowQueuePlaylist
-      },
-      set(val: boolean) {
-        store.commit('update', ['isShowQueuePlaylist', val])
-      },
-    }),
-    currentSong: computed(() => player.currentSong),
-    currentSongId: computed(() => player.currentSong.encodeId),
-    currentPlaylist: computed(() => player.currentPlaylist),
-    currentPlaylistId: computed(() => player.currentPlaylist.encodeId),
     queues: computed(() => player.queues),
+    currentSong: computed(() => player.currentSong),
     recentItems: computed(() => player.recentItems),
+    currentPlaylist: computed(() => player.currentPlaylist),
+    currentSongId: computed(() => player.currentSong.encodeId),
+    currentPlaylistId: computed(() => player.currentPlaylist.encodeId),
     volume: player.writableComputed('volume'),
     isMuted: player.writableComputed('isMuted'),
+    progress: player.writableComputed('progress'),
+    isPlaying: player.writableComputed('isPlaying'),
+    isShuffle: player.writableComputed('isShuffle'),
+    isShowQueuePlaylist: player.writableComputed('isShowQueuePlaylist'),
     Player: player,
-    currentDuration,
-    progress,
-    progressRef,
-  }
-
-  if (option.watch) {
-    function _interval() {
-      if (!store.state.isProgressBusy) {
-        currentDuration.value = player._howler ? <number>player._howler.seek() : 0
-        const duration = player._howler ? player._howler.duration() : 0
-        progress.value = (currentDuration.value / duration) * 100
-      }
-      setTimeout(_interval, 250)
-    }
-    _interval()
   }
   return _player
 }

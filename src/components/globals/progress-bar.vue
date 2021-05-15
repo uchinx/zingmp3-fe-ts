@@ -1,5 +1,5 @@
 <script>
-import { ref, onMounted, onUnmounted, computed, watch, provide } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 export default {
   props: {
@@ -35,7 +35,7 @@ export default {
 
     watch(isBusy, (val) => {
       if (props.busyWhileProgress) {
-        store.commit('update', ['isProgressBusy', val])
+        store.state.player.isProgressBusy = val
       }
     })
 
