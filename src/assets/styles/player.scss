@@ -1,0 +1,72 @@
+.next-song {
+  display: flex;
+  background: var(--alpha-bg);
+  padding: 10px;
+  max-width: 250px;
+  width: 250px;
+  border-radius: 6px;
+  .left {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    display: inline-flex;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      visibility: hidden;
+      .center {
+        flex: 1;
+        text-align: center;
+        .btn {
+          color: #fff;
+          font-size: 17px;
+          & > i:hover {
+            opacity: 0.7;
+          }
+        }
+      }
+    }
+  }
+  .right {
+    padding-left: 10px;
+    color: var(--text-primary);
+    .name {
+      font-weight: 500;
+      display: -webkit-box;
+      max-height: calc(2 * var(--yt-link-line-height, 1.6rem));
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal;
+      -webkit-line-clamp: 1;
+    }
+    .artists {
+      margin-top: 5px;
+      font-size: 12px;
+      > a {
+        color: var(--text-secondary);
+      }
+    }
+  }
+}
+.tippy-content {
+  padding: 0 !important;
+}
+.tippy-box {
+  background: var(--background) !important;
+}
+.tippy-arrow {
+  color: var(--alpha-bg) !important;
+}

@@ -1,8 +1,15 @@
+import { fetchStreaming } from '@/api'
 import { Playlist, Song } from '@/types'
 import { Howl, Howler } from 'howler'
-import { cloneDeep, shuffle } from 'lodash-es'
+import { cloneDeep, head, shuffle } from 'lodash-es'
 import { computed, reactive, ref, watch, WritableComputedRef } from 'vue'
 import { getObject, saveObject } from './storage'
+
+const QUALITY = '128'
+
+enum Repeat {
+  None = 'none', One = 'one', All = 'all'
+}
 class Player {
   public _howler: Howl = null
   private _volumeBeforeMuted: number
@@ -13,6 +20,8 @@ class Player {
     currentPlaylist: {} as Playlist,
     queueItems: [],
     recentItems: [],
+    isShuffle: false,
+    repeat: Repeat.None
   })
 
   private _reactivity = reactive({
@@ -22,12 +31,10 @@ class Player {
   public currentSongId: string
   public currentPlaylistId: string
   public duration: number = 0
-  public repeat: string = 'none'
   public isProgressBusy: boolean = false
 
   // Vue Reactivity
   public isShowQueuePlaylist = ref(false)
-  public isShuffle = ref(false)
   public progress = ref(0)
 
   constructor() {
@@ -41,22 +48,17 @@ class Player {
   }
   looper() {
     if (this._howler && this.isPlaying && !this.isProgressBusy) {
-      const current = this._howler ? <number>this._howler.seek() : 0
-      const total = this._howler ? this._howler.duration() : 0
-      this.progress.value = current && total ? (current / total) * 100 : 0
+      try {
+        const current = this._howler.seek() || 0
+        const total = this._howler.duration() || 0
+        this.progress.value = current && total ? (+current / total) * 100 : 0
+      } catch {}
     }
     setTimeout(() => {
       this.looper()
     }, 500)
   }
   _subscribe() {
-    watch(this.isShuffle, (val: boolean) => {
-      if (val && this.currentPlaylistId) {
-        this.queues = shuffle(this.currentPlaylistItems)
-      } else {
-        this.queues = this.currentPlaylistItems
-      }
-    })
     watch(this._state, (val) => {
       saveObject('Player', val)
     })
@@ -184,22 +186,57 @@ class Player {
       } else {
         this._howler.pause()
       }
+    } else if (this.currentSong) {
+      this.loadSong(true)
     }
+  }
+
+  get isShuffle(): boolean {
+    return this._state.isShuffle
+  }
+
+  set isShuffle(val: boolean) {
+    this._state.isShuffle = val
+    if (val && this.currentPlaylistId) {
+      this.queues = shuffle(this.currentPlaylistItems)
+    } else {
+      this.queues = this.currentPlaylistItems
+    }
+  }
+
+  get repeat(): Repeat {
+    return this._state.repeat
+  }
+
+  set repeat(val: Repeat) {
+    this._state.repeat = val
+  }
+
+  get nextSong(): Song {
+    return head(this.queues)
   }
 
   handleOnend(): void {
     this.isPlaying = false
-    setTimeout(() => {
-      this.isPlaying = true
-    }, 200)
-    if (this.repeat === 'one') {
+    if (this.repeat === Repeat.One) {
+      setTimeout(() => {
+        this.isPlaying = true
+      }, 500)
+      return
     }
+    this.handleNextSong()
   }
 
-  async initialize(url: string, autoPlay?: boolean) {
+  async loadSong(autoPlay?: boolean, song?: Song) {
     Howler.unload()
+    const _song = song ? song : this.currentSong
+    const result = await fetchStreaming(_song.encodeId)
+    if (!result || !result.data) {
+      return false
+    }
+    const source = result.data[QUALITY]
     this._howler = new Howl({
-      src: [url],
+      src: [source],
       html5: true,
       format: ['mp3'],
       onend: this.handleOnend.bind(this),
@@ -219,6 +256,62 @@ class Player {
       return (percent / 100) * this._howler.duration() || 0
     }
     return 0
+  }
+
+  togglePlay(): void {
+    this.isPlaying = !this.isPlaying
+  }
+
+  toggleShuffle(): void {
+    this.isShuffle = !this.isShuffle
+  }
+
+  toggleRepeat(): void {
+    switch(this.repeat) {
+      case Repeat.None: case undefined:
+        this.repeat = Repeat.One
+        break
+      case Repeat.One:
+        this.repeat = Repeat.All
+        break
+      case Repeat.All:
+        this.repeat = Repeat.None
+        break
+    }
+  }
+  async playSong(song?: Song, playlist?: Playlist, isShuffle = false) {
+    if (this.currentSongId === song.encodeId) {
+      this.togglePlay()
+      return
+    }
+
+    if (playlist && this.currentPlaylistId !== playlist.encodeId) {
+      this.currentPlaylist = playlist
+      if (isShuffle) {
+        this.isShuffle = true
+      }
+    }
+
+    this.currentSong = song
+
+    this.loadSong(true)
+  }
+
+  handleNextSong() {
+    this.currentSong = this.nextSong
+    this.loadSong(true)
+  }
+
+  playPlaylist(playlist = <Playlist>{}, isShuffle = false) {
+    if (playlist.song && Array.isArray(playlist.song.items)) {
+      if (playlist.encodeId === this.currentPlaylistId) {
+        return this.togglePlay()
+      }
+      const firstSong = playlist.song.items[0]
+      if (firstSong) {
+        this.playSong(firstSong, playlist, isShuffle)
+      }
+    }
   }
 }
 

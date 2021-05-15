@@ -18,7 +18,9 @@ export default {
   setup({ song }) {
     const player = usePlayer()
     const ele = ref()
-    const isCurrent = computed(() => player.currentSongId.value === song.encodeId)
+    const isCurrent = computed(
+      () => player.currentSongId.value === song.encodeId
+    )
     const isPlaying = computed(() => player.isPlaying.value && isCurrent.value)
     return {
       ...player,
@@ -30,7 +32,12 @@ export default {
 }
 </script>
 <template>
-  <div class="queue" :class="{ active: isActive, playing: isPlaying }" @dblclick="playSong(song)" ref="ele">
+  <div
+    class="queue"
+    :class="{ active: isActive, playing: isPlaying }"
+    @dblclick="playSong(song)"
+    ref="ele"
+  >
     <figure class="left" @click="playSong(song)">
       <img :src="song.thumbnail" alt="thumbnail" />
       <div class="overlay">
@@ -85,7 +92,8 @@ export default {
     background: var(--background);
     opacity: 0.5;
   }
-  &:hover, &.playing {
+  &:hover,
+  &.playing {
     background: var(--alpha-bg);
     .cover {
       opacity: 0 !important;
@@ -93,7 +101,7 @@ export default {
     }
     .left .overlay {
       visibility: visible;
-    } 
+    }
   }
   .left {
     width: 40px;
@@ -137,7 +145,9 @@ export default {
     .artists {
       margin-top: 5px;
       font-size: 12px;
-      color: var(--text-secondary);
+      > a {
+        color: var(--text-secondary);
+      }
     }
   }
 }

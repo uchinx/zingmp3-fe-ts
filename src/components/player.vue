@@ -95,11 +95,50 @@ export default {
               :class="
                 isPlaying ? 'ic-pause-circle-outline' : 'ic-play-circle-outline'
               "
-            ></i></button
-          ><button class="btn">
-            <i class="icon ic-next"></i></button
-          ><button class="btn">
-            <i class="icon ic-repeat"></i>
+            ></i>
+          </button>
+
+          <button class="btn" @click="handleNextSong" id="popup-next-song">
+            <tippy :hide-on-click="false" :offset="[0, 17]">
+              <i class="icon ic-next"></i>
+              <template #content>
+                <div
+                  class="next-song"
+                  v-if="nextSong && Object.keys(nextSong).length"
+                >
+                  <figure class="left">
+                    <img :src="nextSong.thumbnail" alt="thumbnail" />
+                  </figure>
+                  <div class="right">
+                    <div class="name">{{ nextSong.title }}</div>
+                    <div class="artists">
+                      <template
+                        v-for="(artist, index) in nextSong.artists"
+                        :key="'artist' + index"
+                      >
+                        <a href="#">
+                          {{ artist.name
+                          }}<span v-if="index !== nextSong.artists.length - 1"
+                            >,
+                          </span>
+                        </a>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </tippy>
+          </button>
+          <button
+            class="btn"
+            :class="{ active: repeat !== 'none' }"
+            @click="toggleRepeat"
+          >
+            <i
+              class="icon ic-repeat"
+              v-if="['all', 'none', undefined].includes(repeat)"
+            ></i>
+            <i class="icon ic-repeat-one" v-if="repeat === 'one'"></i>
           </button>
         </div>
       </div>
@@ -122,10 +161,10 @@ export default {
         <button class="btn"><i class="icon ic-mv"></i></button>
         <button class="btn"><i class="icon ic-karaoke"></i></button>
         <div class="volume">
-          <button class="btn" @click="handleMute"><i class="icon ic-volume"></i></button>
-          <progress-bar
-            v-model:percent="volume"
-          />
+          <button class="btn" @click="handleMute">
+            <i class="icon ic-volume"></i>
+          </button>
+          <progress-bar v-model:percent="volume" />
         </div>
         <div class="show-list-btn">
           <button
@@ -180,6 +219,9 @@ export default {
       }
       .artists {
         font-size: 12px;
+        > a {
+          color: var(--text-secondary);
+        }
       }
     }
     .action {
