@@ -1,6 +1,9 @@
 import Player from '@/helpers/player'
+import { getObject, saveObject } from '@/helpers/storage'
 import { createStore } from 'vuex'
 import mutations from './global/mutations'
+
+const settings = getObject('settings') || {}
 
 const store = createStore({
   state: {
@@ -9,6 +12,13 @@ const store = createStore({
         target[prop] = val
         return true
       },
+    }),
+    settings: new Proxy(settings, {
+      set(target: any, prop, val) {
+        target[prop] = val
+        saveObject('settings', target)
+        return true
+      }
     }),
     queueItems: [],
     recentItems: [],

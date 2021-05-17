@@ -1,13 +1,16 @@
 <script lang="ts">
 import { onMounted, ref } from 'vue'
 import ThemeIcon from './theme-icon.vue'
+import ModalComponent from '@/components/globals/modal.vue'
+import ThemingComponent from '@/components/theming.vue'
 import { onBeforeRouteUpdate, useRouter } from 'vue-router'
 export default {
-  components: { ThemeIcon },
+  components: { ThemeIcon, ModalComponent, ThemingComponent },
   setup() {
     const isSticky = ref(false)
     const router = useRouter()
     const historyState = ref(window.history.state)
+    const showThemeModal = ref(false)
 
     onBeforeRouteUpdate(() => {
       setTimeout(() => {
@@ -41,6 +44,7 @@ export default {
       routerForward,
       routerBack,
       historyState,
+      showThemeModal,
     }
   },
 }
@@ -71,7 +75,10 @@ export default {
       </div>
     </div>
     <div class="left">
-      <button class="profile-action btn rounded">
+      <button
+        class="profile-action btn rounded"
+        @click="showThemeModal = !showThemeModal"
+      >
         <i class="icon">
           <theme-icon />
         </i>
@@ -91,6 +98,10 @@ export default {
         <i class="ic-svg-vip-label icon"></i>
       </div>
     </div>
+
+    <ModalComponent v-model="showThemeModal" title="Giao Diện">
+      <ThemingComponent/>
+    </ModalComponent>
   </header>
 </template>
 

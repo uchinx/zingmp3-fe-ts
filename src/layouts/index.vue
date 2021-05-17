@@ -3,12 +3,21 @@ import SidebarComponent from './default/sidebar.vue'
 import HeaderComponent from './default/header.vue'
 import QueuePlaylist from '@/components/queue-playlist.vue'
 import PlayerComponent from '@/components/player.vue'
+import { onMounted } from '@vue/runtime-core'
+import { useStore } from 'vuex'
+import { setTheme } from '@/helpers/dom'
 export default {
   components: {
     SidebarComponent,
     HeaderComponent,
     QueuePlaylist,
     PlayerComponent,
+  },
+  setup() {
+    const store = useStore()
+    onMounted(() => {
+      setTheme(store.state.settings.theme)
+    })
   },
 }
 </script>

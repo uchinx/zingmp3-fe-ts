@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "eva-icons": "^1.1.3",
     "howler": "^2.2.1",
     "include-media": "^1.4.9",
     "lodash-es": "^4.17.21",
