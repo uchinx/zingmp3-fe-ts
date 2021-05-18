@@ -8,6 +8,7 @@ export default {
   setup() {
     const player = usePlayer()
     const duration = ref(0)
+    const first = ref(false)
 
     function toggleQueuePlaylist() {
       player.isShowQueuePlaylist.value = <any>!player.isShowQueuePlaylist.value
@@ -23,6 +24,11 @@ export default {
           duration.value = player.Player.calculateDuration(val)
         }
       })
+      watch(player.isPlaying, (val) => {
+        if (val) {
+          first.value = true
+        }
+      })
     })
 
     function handleMute() {
@@ -36,13 +42,14 @@ export default {
       handleChangeDuration,
       handleMute,
       duration,
+      first,
     }
   },
 }
 </script>
 <template>
-  <div class="wrapper-player" @click.stop>
-    <div class="song-detail">
+  <div class="wrapper-player" @click.stop v-if="currentSongId">
+    <div class="song-detail" :class="{ first }">
       <div class="thumbnail-wrapper" :class="{ playing: isPlaying }">
         <figure class="thumbnail">
           <img
@@ -215,8 +222,11 @@ export default {
     width: 30%;
     display: flex;
     align-items: center;
+    transition: transform 0.3s;
+    &.first {
+      transform: translateX(20px);
+    }
     .thumbnail-wrapper {
-      margin-left: 20px;
       position: relative;
       &.playing {
         .note {

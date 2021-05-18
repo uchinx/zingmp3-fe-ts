@@ -15,7 +15,7 @@ export default {
     function toggleLike() {
       isLiked.value = !isLiked.value
     }
-    const album = inject('album')
+    const album = inject('album', null)
     const isCurrent = computed(() => player.currentSongId.value === song.encodeId)
     const isPlaying = computed(() => isCurrent.value && player.isPlaying.value)
     return {

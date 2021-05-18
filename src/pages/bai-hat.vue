@@ -1,39 +1,46 @@
 <script lang="ts">
 import SongInline from '@/components/song/inline.vue'
+import SongSection from '@/components/sections/song.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { fetchPlaylist } from '@/api'
-import { computed, onMounted, provide, ref } from 'vue'
+import { fetchSong } from '@/api'
+import { computed, onMounted, ref } from 'vue'
 import { usePlayer } from '@/composables'
 export default {
-  components: { SongInline },
+  components: { SongInline, SongSection },
   setup() {
     const route = useRoute()
     const router = useRouter()
     const player = usePlayer()
     const { id } = route.params
-    const album = ref()
+    const song = ref()
+    const sections = ref([])
     const isLiked = ref(false)
 
     onMounted(async () => {
-      const result = await fetchPlaylist(<string>id)
+      const result = await fetchSong(<string>id)
       if (result && result.data) {
-        album.value = result.data
+        song.value = result.data
+        if (Array.isArray(result.data.sections)) {
+          sections.value = result.data.sections
+        }
       } else {
         router.push('/404.html')
       }
     })
 
-    provide('album', album)
-
     function toggleLike() {
       isLiked.value = !isLiked.value
     }
 
-    const isCurrent = computed(() => player.currentPlaylistId.value === album.value.encodeId)
+    const isCurrent = computed(
+      () => player.currentSongId.value === song.value.encodeId
+    )
     const isPlaying = computed(() => isCurrent.value && player.isPlaying.value)
 
     return {
-      album,
+      ...player,
+      sections,
+      song,
       isLiked,
       toggleLike,
       isPlaying,
@@ -45,14 +52,14 @@ export default {
 </script>
 
 <template>
-  <div class="album-page" v-if="album">
+  <div class="album-page" v-if="song">
     <div class="album-info">
       <div class="sticky md-flex">
         <div class="cover" :class="{ 'is-playing': isPlaying }">
-          <img :src="album.thumbnailM" alt="cover" />
+          <img :src="song.thumbnailM" alt="cover" />
           <div class="overlay" :class="{ 'is-playing': isPlaying }">
             <div class="center">
-              <button class="btn border" @click.stop="playPlaylist(album, true)">
+              <button class="btn border" @click.stop="playSong(song)">
                 <i
                   class="icon"
                   :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"
@@ -63,20 +70,18 @@ export default {
         </div>
         <div class="md-right">
           <div class="name">
-            <h1>{{ album.title }}</h1>
+            <h1>{{ song.title }}</h1>
           </div>
           <div class="info">
             <p>
               {{ $t('updated_at') }}:
-              {{
-                new Date(album.contentLastUpdate * 1000).toLocaleDateString()
-              }}
+              {{ new Date(song.releaseDate * 1000).toLocaleDateString() }}
             </p>
-            <p>{{ album.like }} {{ $t('lover') }}</p>
+            <p>{{ song.like }} {{ $t('lover') }}</p>
           </div>
           <div class="md-action">
             <div class="action">
-              <button class="btn zing" @click.stop="playPlaylist(album, true)">
+              <button class="btn zing" @click.stop="playSong(song, true)">
                 <div class="d-flex" v-if="isPlaying">
                   <i class="icon ic-pause"></i>
                   <span>{{ $t('pause') }}</span>
@@ -103,18 +108,13 @@ export default {
       </div>
     </div>
     <div class="album">
-      <div class="description" v-if="album.description">
-        <p>
-          <span class="text-secondary">{{ $t('quote') }}: </span>
-          <span>{{ album.description }}</span>
-        </p>
-      </div>
       <div class="song-list">
-        <song-inline
-          v-for="(song, index) in album.song.items"
-          :key="'song' + index"
-          :song="song"
-        />
+        <song-inline :song="song" />
+      </div>
+      <div v-if="Array.isArray(sections) && sections.length">
+        <template v-for="(section, index) in sections" :key="'section' + index">
+          <SongSection :songs="section.items" :title="section.title"/>
+        </template>
       </div>
     </div>
   </div>

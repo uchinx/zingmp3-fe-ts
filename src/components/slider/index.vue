@@ -3,8 +3,11 @@ import { onMounted, ref } from 'vue'
 import sliders from './data.json'
 import SliderItem from './item.vue'
 export default {
+  props: {
+    sliders: { type: Array },
+  },
   components: { SliderItem },
-  setup() {
+  setup({ sliders }) {
     const currentIndex = ref(0)
     const isPause = ref(false)
     const slider = sliders[0]
@@ -220,7 +223,7 @@ $right-cover-transform-m: translateX(25%) scale($not-current-cover-scale);
     width: 6px;
     height: 6px;
     border-radius: 999px;
-    transition: all 0.5s ease-in-out .3s;
+    transition: all 0.5s ease-in-out 0.3s;
     background: var(--banner-home-dot);
     &.current {
       width: 24px;

@@ -1,10 +1,13 @@
 <script>
 import { ref, watch } from 'vue'
-import items from './data.json'
 import CardComponent from '@/components/card.vue'
 export default {
+  props: {
+    title: { type: String },
+    items: { type: Array },
+  },
   components: { CardComponent },
-  setup() {
+  setup({ items }) {
     const carousel = ref(null)
     const current = ref(0)
     const maxCount = Math.ceil(items.length / 5)
@@ -23,7 +26,6 @@ export default {
       carousel,
       maxCount,
       current,
-      items
     }
   },
 }
@@ -31,7 +33,7 @@ export default {
 
 <template>
   <h3 class="carousel-title">
-    <span>Maybe you want to listen</span>
+    <span>{{ title }}</span>
     <div class="controls">
       <button
         @click="handlePrev"

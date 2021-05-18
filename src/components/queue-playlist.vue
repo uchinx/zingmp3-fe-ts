@@ -1,8 +1,7 @@
 <script lang="ts">
-import { ref, onMounted, provide, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { usePlayer } from '@/composables'
 import QueueSong from './song/queue.vue'
-import { useStore } from 'vuex'
 export default {
   components: { QueueSong },
   setup() {

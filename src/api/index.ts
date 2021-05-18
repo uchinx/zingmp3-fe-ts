@@ -11,3 +11,15 @@ export function fetchStreaming(id: string) {
     url: '/song/getStreaming?id=' + id
   })
 }
+
+export function fetchHome(page = 1) {
+  return request({
+    url: '/home?page' + page
+  })
+}
+
+export function fetchSong(id: string) {
+  return request({
+    url: '/song/getDetail?id=' + id
+  })
+}
