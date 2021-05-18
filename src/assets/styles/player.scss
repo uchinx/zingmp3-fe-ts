@@ -70,3 +70,38 @@
 .tippy-arrow {
   color: var(--alpha-bg) !important;
 }
+
+
+@keyframes bubble-1 {
+  0% {
+      opacity: 0;
+      transform: rotate(90deg) translate(40px) rotate(-90deg)
+  }
+
+  50% {
+      opacity: 1;
+      transform: rotate(180deg) translate(55px) rotate(-180deg) scale(1.3)
+  }
+
+  to {
+      opacity: 0;
+      transform: rotate(260deg) translate(70px) rotate(-260deg) scale(1.7) rotate(45deg) rotate(50deg)
+  }
+}
+
+@keyframes bubble-2 {
+  0% {
+      opacity: 0;
+      transform: rotate(90deg) translate(40px) rotate(-90deg)
+  }
+
+  50% {
+      opacity: 1;
+      transform: rotate(175deg) translate(57.5px) rotate(-175deg) scale(1.3) rotate(-50deg)
+  }
+
+  to {
+      opacity: 0;
+      transform: rotate(260deg) translate(75px) rotate(-260deg) scale(1.7) rotate(45deg) rotate(-50deg)
+  }
+}

@@ -43,13 +43,32 @@ export default {
 <template>
   <div class="wrapper-player" @click.stop>
     <div class="song-detail">
-      <figure class="thumbnail">
-        <img
-          v-if="currentSong.thumbnail"
-          :src="currentSong.thumbnail"
-          alt="thumbnail"
-        />
-      </figure>
+      <div class="thumbnail-wrapper" :class="{ playing: isPlaying }">
+        <figure class="thumbnail">
+          <img
+            v-if="currentSong.thumbnail"
+            :src="currentSong.thumbnail"
+            alt="thumbnail"
+          />
+        </figure>
+        <svg viewBox="0 0 512 512" class="note note-1">
+          <path
+            d="M470.38 1.51L150.41 96A32 32 0 0 0 128 126.51v261.41A139 139 0 0 0 96 384c-53 0-96 28.66-96 64s43 64 96 64 96-28.66 96-64V214.32l256-75v184.61a138.4 138.4 0 0 0-32-3.93c-53 0-96 28.66-96 64s43 64 96 64 96-28.65 96-64V32a32 32 0 0 0-41.62-30.49z"
+          ></path></svg
+        ><svg viewBox="0 0 384 512" class="note note-2">
+          <path
+            d="M310.94 1.33l-96.53 28.51A32 32 0 0 0 192 60.34V360a148.76 148.76 0 0 0-48-8c-61.86 0-112 35.82-112 80s50.14 80 112 80 112-35.82 112-80V148.15l73-21.39a32 32 0 0 0 23-30.71V32a32 32 0 0 0-41.06-30.67z"
+          ></path></svg
+        ><svg viewBox="0 0 512 512" class="note note-3">
+          <path
+            d="M470.38 1.51L150.41 96A32 32 0 0 0 128 126.51v261.41A139 139 0 0 0 96 384c-53 0-96 28.66-96 64s43 64 96 64 96-28.66 96-64V214.32l256-75v184.61a138.4 138.4 0 0 0-32-3.93c-53 0-96 28.66-96 64s43 64 96 64 96-28.65 96-64V32a32 32 0 0 0-41.62-30.49z"
+          ></path></svg
+        ><svg viewBox="0 0 384 512" class="note note-4">
+          <path
+            d="M310.94 1.33l-96.53 28.51A32 32 0 0 0 192 60.34V360a148.76 148.76 0 0 0-48-8c-61.86 0-112 35.82-112 80s50.14 80 112 80 112-35.82 112-80V148.15l73-21.39a32 32 0 0 0 23-30.71V32a32 32 0 0 0-41.06-30.67z"
+          ></path>
+        </svg>
+      </div>
       <div class="detail">
         <div>
           <h4 class="title">{{ currentSong.title || '' }}</h4>
@@ -196,12 +215,59 @@ export default {
     width: 30%;
     display: flex;
     align-items: center;
+    .thumbnail-wrapper {
+      margin-left: 20px;
+      position: relative;
+      &.playing {
+        .note {
+          animation-play-state: running;
+        }
+        .thumbnail {
+          animation-play-state: running;
+        }
+      }
+      .note {
+        height: 10px;
+        width: 10px;
+        position: absolute;
+        top: calc(50% - 5px);
+        left: calc(50% - 5px);
+        opacity: 0;
+        -webkit-animation-name: bubble-1;
+        animation-name: bubble-1;
+        animation-iteration-count: infinite;
+        animation-duration: 4.8s;
+        animation-timing-function: linear;
+        animation-play-state: paused;
+
+        path {
+          fill: var(--text-primary);
+        }
+        &.note-2 {
+          animation-delay: 1.2s;
+          animation-name: bubble-2;
+        }
+        &.note-3 {
+          animation-delay: 2.4s;
+        }
+        &.note-4 {
+          animation-delay: 3.6s;
+          animation-name: bubble-2;
+        }
+      }
+    }
     .thumbnail {
       margin: 0;
       width: 64px;
       height: 64px;
-      overflow: hidden;
       border-radius: 100%;
+      position: relative;
+      overflow: hidden;
+      animation-name: spinner;
+      animation-duration: 12s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+      animation-play-state: paused;
       img {
         width: 100%;
       }
