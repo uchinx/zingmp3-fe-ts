@@ -48,7 +48,12 @@ export default {
 }
 </script>
 <template>
-  <div class="wrapper-player" @click.stop v-if="currentSongId">
+  <div
+    class="wrapper-player"
+    @click.stop
+    v-if="currentSongId"
+    :class="{ karaoke: isShowKaraoke }"
+  >
     <div class="song-detail" :class="{ first }">
       <div class="thumbnail-wrapper" :class="{ playing: isPlaying }">
         <figure class="thumbnail">
@@ -185,7 +190,12 @@ export default {
     <div class="right-control">
       <div class="item">
         <button class="btn"><i class="icon ic-mv"></i></button>
-        <button class="btn"><i class="icon ic-karaoke"></i></button>
+        <button class="btn" :class="{ active: isShowKaraoke }">
+          <i
+            class="icon ic-karaoke"
+            @click="isShowKaraoke = !isShowKaraoke"
+          ></i>
+        </button>
         <div class="volume">
           <button class="btn" @click="handleMute">
             <i class="icon ic-volume"></i>
@@ -217,7 +227,19 @@ export default {
   display: flex;
   border-top: 1px solid var(--alpha-bg);
   padding: 0 20px;
-  z-index: 1111;
+  z-index: 11112;
+  transition: background .1s;
+  &.karaoke {
+    background: transparent !important;
+    border-top: unset !important;
+    .song-detail,
+    .right-control {
+      visibility: hidden;
+    }
+    .player {
+      flex-direction: column-reverse;
+    }
+  }
   .song-detail {
     width: 30%;
     display: flex;
@@ -315,6 +337,8 @@ export default {
     flex-shrink: 1;
     text-align: left;
     align-self: center;
+    display: flex;
+    flex-direction: column;
     .control {
       display: flex;
       align-items: center;

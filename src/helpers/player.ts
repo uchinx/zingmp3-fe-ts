@@ -28,6 +28,7 @@ class Player {
 
   private _reactivity = reactive({
     isPlaying: false,
+    isShowKaraoke: false
   })
 
   public currentSongId: string
@@ -217,6 +218,14 @@ class Player {
 
   get nextSong(): Song {
     return head(this.queues)
+  }
+
+  get isShowKaraoke(): boolean {
+    return this._reactivity.isShowKaraoke
+  }
+
+  set isShowKaraoke(val: boolean) {
+    this._reactivity.isShowKaraoke = val
   }
 
   handleOnend(): void {

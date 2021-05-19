@@ -82,6 +82,7 @@ export interface UsePlayer {
   repeat: ComputedRef<string>
   volume: WritableComputedRef<number>
   isMuted: WritableComputedRef<boolean>
+  isShowKaraoke: WritableComputedRef<boolean>
   isPlaying: any
   isShowQueuePlaylist: any
   isShuffle: any
