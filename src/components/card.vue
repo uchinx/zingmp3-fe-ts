@@ -1,16 +1,25 @@
 <script lang="ts">
+import { usePlayer } from '@/composables'
+import { computed } from 'vue'
 export default {
   props: {
     detail: {
       type: Object,
     },
   },
-  setup() {},
+  setup({ detail }) {
+    const player = usePlayer()
+    const isCurrent = computed(() => player.currentPlaylistId.value === detail.encodeId)
+    const isPlaying = computed(() => isCurrent.value && player.isPlaying)
+    return {
+      isPlaying
+    }
+  },
 }
 </script>
 <template>
   <div class="card">
-    <div class="image">
+    <div class="image" :class="{playing: isPlaying}">
       <img :src="detail.thumbnail" alt="thumbnail" />
       <div class="controls">
         <div class="center">
@@ -18,8 +27,7 @@ export default {
             <i class="ic-like"></i>
           </button>
           <button class="btn">
-            <i class="icon-music-wave" v-if="false"></i>
-            <i v-else class="ic-play"></i>
+            <i class="icon" :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"></i>
           </button>
           <button class="btn">
             <i class="ic-more"></i>
@@ -34,13 +42,23 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.card {
+  overflow: hidden;
+  border-radius: 10px;
+}
 .title {
   color: var(--body-text);
   text-decoration: none;
   margin-top: 4px;
-  display: inline-block;
   font-size: 14px;
   font-weight: 500;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  -webkit-line-clamp: 2;
   &:hover {
     color: var(--primary);
   }
@@ -48,6 +66,8 @@ export default {
 .image {
   overflow: hidden;
   position: relative;
+  border-radius: 10px;
+
   &::after {
     content: '';
     position: absolute;
@@ -89,18 +109,15 @@ export default {
       color: #fff;
       button {
         color: #fff;
+        background: transparent !important;
         i {
           vertical-align: middle;
           font-size: 18px;
         }
       }
-      .ic-play {
-        font-size: 32px !important;
-        transform: scale(1.8);
+      .icon {
+        font-size: 26px !important;
         cursor: pointer;
-        &:hover {
-          transform: scale(2);
-        }
       }
     }
   }

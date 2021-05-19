@@ -21,12 +21,12 @@
 [data-theme='dark'] {
   @include schema-generator(
     $primary: #7200a1,
-    $background: #282828,
-    $sidebar-bg: hsla(0, 0%, 100%, 0.05),
+    $background: #170f23,
+    $sidebar-bg: hsla(0,0%,100%,0.05),
     $alpha-bg: hsla(0, 0%, 100%, 0.1),
     $highlight: #fff,
     $text-primary: #fff,
-    $text-secondary: hsla(0,0%,100%,0.5),
+    $text-secondary: #dadada,
     $boder-color: rgba(255, 255, 255, 0.1),
     $tab-active: hsla(0,0%,100%,0.3),
     $banner-home-dot: #d8d8d8,

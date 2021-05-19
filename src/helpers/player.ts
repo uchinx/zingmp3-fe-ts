@@ -8,7 +8,9 @@ import { getObject, saveObject } from './storage'
 const QUALITY = '128'
 
 enum Repeat {
-  None = 'none', One = 'one', All = 'all'
+  None = 'none',
+  One = 'one',
+  All = 'all',
 }
 class Player {
   public _howler: Howl = null
@@ -21,7 +23,7 @@ class Player {
     queueItems: [],
     recentItems: [],
     isShuffle: false,
-    repeat: Repeat.None
+    repeat: Repeat.None,
   })
 
   private _reactivity = reactive({
@@ -45,6 +47,7 @@ class Player {
     }
     this._subscribe()
     this.looper()
+    this.initMediaSession()
   }
   looper() {
     if (this._howler && this.isPlaying && !this.isProgressBusy) {
@@ -227,6 +230,47 @@ class Player {
     this.handleNextSong()
   }
 
+  initMediaSession() {
+    const navigator: any = window.navigator
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', () => {
+        this.isPlaying = true
+      })
+      navigator.mediaSession.setActionHandler('pause', () => {
+        this.isPlaying = false
+      })
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        console.log('previoustrack')
+      })
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        this.handleNextSong()
+      })
+      navigator.mediaSession.setActionHandler('stop', () => {
+        this.isPlaying = false
+      })
+    }
+  }
+
+  _updateMediaSessionMetaData() {
+    const navigator: any = window.navigator
+    const MediaMetadata: any = (<any>window).MediaMetadata
+    if ('mediaSession' in navigator === false) {
+      return
+    }
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: this.currentSong.title,
+      artist: this.currentSong.artistsNames,
+      album: 'Zing MP3',
+      artwork: [
+        {
+          src: this.currentSong.thumbnailM,
+          type: 'image/jpg',
+          sizes: '512x512',
+        },
+      ],
+    })
+  }
+
   async loadSong(autoPlay?: boolean, song?: Song) {
     Howler.unload()
     const _song = song ? song : this.currentSong
@@ -241,14 +285,19 @@ class Player {
       format: ['mp3'],
       onend: this.handleOnend.bind(this),
     })
+    this._updateMediaSessionMetaData()
     if (autoPlay) {
       this.isPlaying = true
       document.title = `${this.currentSong.title} - ${this.currentSong.artistsNames} | Zing MP3`
     }
   }
-  seek(percent: number) {
+  seek(percent?: number): number | void {
     if (this._howler) {
-      this._howler.seek((percent / 100) * this._howler.duration())
+      if (percent) {
+        this._howler.seek((percent / 100) * this._howler.duration())
+      } else {
+        return this._howler.seek() as number
+      }
     }
   }
   calculateDuration(percent: number) {
@@ -267,8 +316,9 @@ class Player {
   }
 
   toggleRepeat(): void {
-    switch(this.repeat) {
-      case Repeat.None: case undefined:
+    switch (this.repeat) {
+      case Repeat.None:
+      case undefined:
         this.repeat = Repeat.One
         break
       case Repeat.One:

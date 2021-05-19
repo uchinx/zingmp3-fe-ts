@@ -45,7 +45,6 @@
     .name {
       font-weight: 500;
       display: -webkit-box;
-      max-height: calc(2 * var(--yt-link-line-height, 1.6rem));
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
