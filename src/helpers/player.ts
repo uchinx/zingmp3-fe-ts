@@ -1,4 +1,4 @@
-import { fetchStreaming } from '@/api'
+import { fetchPlaylist, fetchStreaming } from '@/api'
 import { Playlist, Song } from '@/types'
 import { Howl, Howler } from 'howler'
 import { cloneDeep, head, shuffle } from 'lodash-es'
@@ -362,14 +362,23 @@ class Player {
   }
 
   playPlaylist(playlist = <Playlist>{}, isShuffle = false) {
+    if (playlist.encodeId === this.currentPlaylistId) {
+      return this.togglePlay()
+    }
     if (playlist.song && Array.isArray(playlist.song.items)) {
-      if (playlist.encodeId === this.currentPlaylistId) {
-        return this.togglePlay()
-      }
       const firstSong = playlist.song.items[0]
       if (firstSong) {
         this.playSong(firstSong, playlist, isShuffle)
       }
+    } else {
+      this.loadPlaylist(playlist)
+    }
+  }
+
+  async loadPlaylist(playlist: Playlist) {
+    const result: any = await fetchPlaylist(playlist.encodeId).catch(() => false)
+    if (result && result.data) {
+      this.playPlaylist(result.data)
     }
   }
 }
