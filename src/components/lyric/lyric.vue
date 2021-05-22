@@ -1,5 +1,5 @@
 <script lang="ts">
-import { computed, onMounted, Ref, ref } from 'vue'
+import { computed, onMounted, Ref, ref, watch } from 'vue'
 import { usePlayer } from '@/composables'
 import { fetchLyric } from '@/api'
 import { lyricParser } from '@/helpers/lyric'
@@ -28,24 +28,26 @@ export default {
       doLyric()
     }
 
+    watch(currentIndex, (val) => {
+      const el = document.getElementById(`s${val}entence`)
+      if (el) {
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center',
+        })
+      }
+    })
+
     function doLyric() {
       const seek = player.Player.seek() as number
       if (player.Player.isPlaying && _isLyric) {
-        let lastIndex = currentIndex.value
         currentIndex.value = _sentences.findIndex((s: any, i: number) => {
           const _next = _sentences[i + 1]
           return seek >= s.time && (_next ? seek < _next.time : true)
         })
-        if (lastIndex !== currentIndex.value) {
-          const el = document.getElementById(`s${currentIndex.value}entence`)
-          if (el)
-            el.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            })
-        }
       }
-      setTimeout(doLyric, 500)
+      setTimeout(doLyric, 100)
     }
 
     onMounted(() => {
@@ -77,7 +79,7 @@ export default {
       songImage,
       sentences,
       currentIndex,
-      handleSeek
+      handleSeek,
     }
   },
 }
@@ -99,7 +101,8 @@ export default {
               :key="'sentence' + index"
             >
               <div
-                class="sentence" @click="handleSeek(sentence.time)"
+                class="sentence"
+                @click="handleSeek(sentence.time)"
                 :class="{ active: index === currentIndex }"
                 :id="`s${index}entence`"
               >
