@@ -305,7 +305,11 @@ class Player {
       if (percent) {
         this._howler.seek((percent / 100) * this._howler.duration())
       } else {
-        return this._howler.seek() as number
+        try {
+          return this._howler.seek() as number
+        } catch {
+          return 0
+        }
       }
     }
   }

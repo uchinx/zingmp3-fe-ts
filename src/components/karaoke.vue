@@ -1,31 +1,40 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
 import ModalComponent from '@/components/globals/modal.vue'
-import { ref, watch } from 'vue'
+import KaraokeContent from './karaoke/content.vue'
+import { onMounted, ref, watch } from 'vue'
 export default {
-  components: { ModalComponent },
+  components: { ModalComponent, KaraokeContent },
   setup() {
     const player = usePlayer()
     const isShowing = ref(false)
+    const lastId = ref('')
     watch(player.isShowKaraoke, (val: boolean) => {
       if (val) {
         isShowing.value = player.isShowKaraoke.value
+        lastId.value = player.currentSongId.value
         return
       }
       setTimeout(() => {
         isShowing.value = player.isShowKaraoke.value
       }, 1000)
     })
+    watch(player.currentSongId, (val: string) => {
+      if (isShowing.value) {
+        lastId.value = val
+      }
+    })
     return {
       ...player,
       isShowing,
+      lastId,
     }
   },
 }
 </script>
 <template>
   <div class="wrapper-karaoke" :class="{ active: isShowKaraoke }">
-    <div class="wrapper" v-if="isShowing">
+    <div class="wrapper" v-show="isShowing">
       <div class="header">
         <div class="left"></div>
         <div class="center"></div>
@@ -41,15 +50,18 @@ export default {
           </div>
         </div>
       </div>
-      <div class="content"></div>
+      <div class="content">
+        <karaoke-content
+          v-if="isShowing || lastId === currentSongId"
+          :key="currentSongId"
+        />
+      </div>
       <div class="bottom">
         <div class="song-info">
           <span class="song">
             {{ currentSong.title }}
           </span>
-          <span class="artist">
-            - {{ currentSong.artistsNames }}
-          </span>
+          <span class="artist"> - {{ currentSong.artistsNames }} </span>
         </div>
       </div>
     </div>
@@ -64,7 +76,6 @@ export default {
   width: 100%;
   height: 100%;
   background: var(--background);
-  background-image: url(http://photo-resize-zmp3.zadn.vn/w540_r1x1_jpeg/cover/1/f/1/a/1f1ab8428a983f8a7700bfaa5591713b.jpg) no-repeat;
   z-index: 11111;
   transition: 0.5s;
   transform: translateY(100%);
@@ -77,6 +88,8 @@ export default {
     padding: 10px 20px;
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
     .bottom {
       position: absolute;
       margin: auto;
@@ -110,6 +123,9 @@ export default {
         }
       }
     }
+  }
+  .content {
+    flex: 1;
   }
 }
 </style>
