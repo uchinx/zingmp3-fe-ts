@@ -7,11 +7,14 @@ import { buildSentences, normalize } from '@/helpers/karaoke'
 import { useStore } from 'vuex'
 const fontSize = 50
 const lineHeight = 1.5
-const lines = 2 // 2,4
+const lines = 2
 const fontFamily = '${fontFamily}'
 
 export default {
-  setup() {
+  props: {
+    lyricUrl: { type: String }
+  },
+  setup({}, { emit }) {
     const player = usePlayer()
     const store = useStore()
     const canvasEle = ref()
@@ -44,6 +47,7 @@ export default {
         player.currentSongId.value
       ).catch(() => false)
       if (result && result.data) {
+        emit('update:lyricUrl', result.data.file)
         if (result.data.sentences) {
           sentences = result.data.sentences
         }

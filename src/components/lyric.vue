@@ -1,14 +1,17 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
 import ModalComponent from '@/components/globals/modal.vue'
-import KaraokeContent from './karaoke/content.vue'
-import { onMounted, ref, watch } from 'vue'
+import KaraokeComponent from './lyric/karaoke.vue'
+import LyricComponent from './lyric/lyric.vue'
+import { ref, watch } from 'vue'
 export default {
-  components: { ModalComponent, KaraokeContent },
+  components: { ModalComponent, KaraokeComponent, LyricComponent },
   setup() {
     const player = usePlayer()
     const isShowing = ref(false)
     const lastId = ref('')
+    const tab = ref('lyric')
+    const lyricUrl = ref('')
     watch(player.isShowKaraoke, (val: boolean) => {
       if (val) {
         isShowing.value = player.isShowKaraoke.value
@@ -28,20 +31,39 @@ export default {
       ...player,
       isShowing,
       lastId,
+      tab,
+      lyricUrl,
     }
   },
 }
 </script>
 <template>
-  <div class="wrapper-karaoke" :class="{ active: isShowKaraoke }">
+  <div class="wrapper-lyric" :class="{ active: isShowKaraoke }">
     <div class="wrapper" v-show="isShowing">
       <div class="header">
         <div class="left"></div>
-        <div class="center"></div>
+        <div class="center">
+          <div class="tab">
+            <button
+              @click="tab = 'karaoke'"
+              class="btn"
+              :class="{ current: tab === 'karaoke' }"
+            >
+              {{ $t('karaoke') }}
+            </button>
+            <button
+              @click="tab = 'lyric'"
+              class="btn"
+              :class="{ current: tab === 'lyric' }"
+            >
+              {{ $t('lyric') }}
+            </button>
+          </div>
+        </div>
         <div class="right">
           <div class="actions">
             <!-- <button class="btn"><i class="icon ic-scale"></i></button> -->
-            <button class="btn" @click="haha = true">
+            <button class="btn">
               <i class="icon ic-settings"></i>
             </button>
             <button class="btn" @click="isShowKaraoke = false">
@@ -51,10 +73,14 @@ export default {
         </div>
       </div>
       <div class="content">
-        <karaoke-content
-          v-if="isShowing || lastId === currentSongId"
-          :key="currentSongId"
-        />
+        <template v-if="isShowing || lastId === currentSongId">
+          <karaoke-component
+            v-show="tab === 'karaoke'"
+            :key="currentSongId"
+            v-model:lyricUrl="lyricUrl"
+          />
+          <lyric-component v-if="lyricUrl" :key="lyricUrl" v-show="tab === 'lyric'" :lyric-url="lyricUrl"/>
+        </template>
       </div>
       <div class="bottom">
         <div class="song-info">
@@ -69,7 +95,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-.wrapper-karaoke {
+.wrapper-lyric {
   position: fixed;
   top: 0;
   left: 0;
@@ -109,17 +135,49 @@ export default {
     }
   }
   .header {
-    display: flex;
+    position: relative;
     align-items: center;
     height: 75px;
+    min-height: 75px;
+    margin-top: 15px;
     .right {
-      margin-left: auto;
+      position: absolute;
+      right: 0;
+      top: 0;
       .actions {
         .btn {
           border-radius: 999px;
           font-size: 20px;
           padding: 15px;
           margin-left: 20px;
+        }
+      }
+    }
+    .center {
+      width: 25%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      .tab {
+        display: flex;
+        background: var(--alpha-bg);
+        padding: 3px;
+        border-radius: 999px;
+        & > button {
+          border-radius: 999px;
+          flex: 1;
+          background: transparent;
+          font-size: 16px;
+          flex-grow: 1;
+          padding: 8px 5px;
+          font-weight: 500;
+          &.current {
+            font-weight: bold;
+            color: var(--primary-text);
+            background: var(--tab-active);
+          }
         }
       }
     }
