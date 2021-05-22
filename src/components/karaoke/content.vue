@@ -1,39 +1,41 @@
 <script lang="ts">
 import { usePlayer } from '@/composables'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { fetchKaraokeLyric } from '@/api'
-import { head, last } from 'lodash-es'
 import { Sentence } from '@/types'
-import { normalize } from '@/helpers/lyric'
-const KARAOKE_DELAY = 1500
+import { buildSentences, normalize } from '@/helpers/karaoke'
+import { useStore } from 'vuex'
+const fontSize = 50
+const lineHeight = 1.5
+const lines = 2 // 2,4
+const fontFamily = '${fontFamily}'
+
 export default {
   setup() {
     const player = usePlayer()
-    let sentences: [Sentence]
+    const store = useStore()
     const canvasEle = ref()
-    let _countSentence = 0
-    let _countWord = 0
+    const theme = computed(() => store.state.settings.theme)
+    let sentences: [Sentence]
+    let sections: any
     let _isKaraoke = false
     let width = 0
     let height = 0
-    let _sentenceIndex = 1
-    const _sentences: Sentence[] = []
     let ctx: CanvasRenderingContext2D = null
-
-    function handleOnSeek() {
-      const seek = <number>player.Player.seek() * 1000
-      console.log(seek)
-
+    const Colors = {
+      primary: theme.value === 'dark' ? '#fff' : '#000',
+      stroke: '#7200a1',
     }
-
+    watch(theme, (val: string) => {
+      Colors.primary = val === 'dark' ? '#fff' : '#000'
+    })
     onMounted(() => {
       loadKaraokeLyric().then(() => {
         doKaraoke()
-        player.Player._howler.on('seek', handleOnSeek)
         ctx = canvasEle.value.getContext('2d')
         width = canvasEle.value.width
         height = canvasEle.value.height
-        sentences = normalize(sentences, ctx)
+        sections = normalize(sentences, ctx)
       })
     })
 
@@ -49,53 +51,92 @@ export default {
       _isKaraoke = Array.isArray(sentences) && sentences.length > 0
     }
 
-    function pushSentence(sentence: Sentence) {
-      if (_sentenceIndex === 0) {
-        _sentences[1] = sentence
-        _sentenceIndex = 1
-      } else {
-        _sentences[0] = sentence
-        _sentenceIndex = 0
-      }
+    function drawIntro() {
+      const song = player.currentSong.value
+      if (!song) return
+      const fontsize = [60, 40]
+      ;[song.title, song.artistsNames].forEach((text, index) => {
+        const contentHeight =
+          fontSize * lines + lineHeight * fontSize * (lines - 1)
+
+        const positionY =
+          (height - contentHeight) / 2 +
+          (lineHeight * fontSize + fontSize) * (index % lines)
+        const positionX = width / 2
+
+        ctx.font = `bold ${fontsize[index]}px ${fontFamily}`
+        ctx.fillText(text, positionX, positionY)
+      })
     }
 
-    function drawSentence(seek?: number) {
+    function draw(seek?: number) {
+      ctx.fillStyle = Colors.primary
       ctx.clearRect(0, 0, width, height)
-      ctx.fillStyle = '#000'
       ctx.textAlign = 'center'
-      ctx.font = 'bold 50px sans-serif'
+      ctx.font = `bold ${fontSize}px ${fontFamily}`
       ctx.textBaseline = 'hanging'
       ctx.globalAlpha = 1
-      for (let i = 0; i < _sentences.length; i++) {
-        const sentence = _sentences[i]
-        if (sentence && Array.isArray(sentence.words)) {
-          ctx.fillText(
-            sentence.words.map((word) => word.data).join(' '),
-            width / 2,
-            60 * (i + 2)
-          )
-          // check is ended
-          const endTime = last(sentence.words).endTime + KARAOKE_DELAY
-          if (seek > endTime) {
-            _sentences[i] = undefined
-          }
-        }
+      const sentences = buildSentences(sections, seek)
+      if (!sentences.length) {
+        drawIntro()
+        return
       }
+      sentences.forEach(({ text, start, end, words, index, alpha }: any) => {
+        const meaText = ctx.measureText(text)
+        const gradient = ctx.createLinearGradient(
+          (width - meaText.width) / 2,
+          0,
+          (width + meaText.width) / 2,
+          0
+        )
+
+        ctx.globalAlpha = alpha
+
+        if (seek > end) {
+          gradient.addColorStop(1, Colors.stroke)
+        } else if (seek < start) {
+          gradient.addColorStop(1, Colors.primary)
+        } else {
+          ctx.globalAlpha = 1
+          let percent = 0
+          for (let i = 0; i < words.length; i++) {
+            const word = words[i]
+            if (seek > word.end) {
+              continue
+            }
+
+            percent = word.startAt
+            const deta = (seek - word.start) / word.duration || 0
+
+            if (deta < 0) {
+              break
+            }
+
+            percent = Math.min(percent + deta * word.perInSentence, 1)
+            break
+          }
+          gradient.addColorStop(percent, Colors.stroke)
+          gradient.addColorStop(percent, Colors.primary)
+        }
+
+        const contentHeight =
+          fontSize * lines + lineHeight * fontSize * (lines - 1)
+
+        const positionY =
+          (height - contentHeight) / 2 +
+          (lineHeight * fontSize + fontSize) * (index % lines)
+        const positionX = width / 2
+
+        ctx.fillStyle = gradient
+        ctx.fillText(text, positionX, positionY)
+      })
     }
 
     function doKaraoke() {
       if (player.isPlaying.value && _isKaraoke) {
         const seek = <number>player.Player.seek() * 1000
-        const sentence = sentences[_countSentence]
-        if (sentence && Array.isArray(sentence.words)) {
-          const startTime = head(sentence.words).startTime - KARAOKE_DELAY || -1
-          if (seek > startTime) {
-            pushSentence(sentence)
-            _countSentence++
-          }
-        }
         if (ctx) {
-          drawSentence(seek)
+          draw(seek)
         }
       }
       requestAnimationFrame(doKaraoke)
@@ -107,7 +148,7 @@ export default {
 <template>
   <div class="karaoke-content">
     <div class="content">
-      <canvas id="canvas" width="1500" height="700" ref="canvasEle"></canvas>
+      <canvas id="canvas" width="1500" height="600" ref="canvasEle"></canvas>
     </div>
   </div>
 </template>

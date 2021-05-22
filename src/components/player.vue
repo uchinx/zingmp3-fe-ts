@@ -130,7 +130,7 @@ export default {
           </button>
 
           <button class="btn" @click="handleNextSong" id="popup-next-song">
-            <tippy :hide-on-click="false" :offset="[0, 17]">
+            <tippy :hide-on-click="false" :offset="[0, isShowKaraoke ? 10 : 17]" z-index="11113">
               <i class="icon ic-next"></i>
               <template #content>
                 <div
