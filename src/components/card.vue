@@ -9,25 +9,31 @@ export default {
   },
   setup({ detail }) {
     const player = usePlayer()
-    const isCurrent = computed(() => player.currentPlaylistId.value === detail.encodeId)
-    const isPlaying = computed(() => isCurrent.value && player.isPlaying)
+    const isCurrent = computed(
+      () => player.currentPlaylistId.value === detail.encodeId
+    )
+    const isPlaying = computed(() => isCurrent.value && player.isPlaying.value)
     return {
-      isPlaying
+      ...player,
+      isPlaying,
     }
   },
 }
 </script>
 <template>
   <div class="card">
-    <div class="image" :class="{playing: isPlaying}">
+    <div class="image" :class="{ playing: isPlaying }">
       <img :src="detail.thumbnail" alt="thumbnail" />
       <div class="controls">
         <div class="center">
           <button class="btn">
             <i class="ic-like"></i>
           </button>
-          <button class="btn">
-            <i class="icon" :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"></i>
+          <button class="btn play" @click="playPlaylist(detail)">
+            <i
+              class="icon"
+              :class="isPlaying ? 'ic-gif-playing-white' : 'ic-play'"
+            ></i>
           </button>
           <button class="btn">
             <i class="ic-more"></i>
@@ -103,21 +109,32 @@ export default {
     width: 100%;
     height: 100%;
     z-index: 1111;
+    display: flex;
+    align-items: center;
     .center {
-      line-height: 14;
-      text-align: center;
       color: #fff;
+      text-align: center;
+      margin: auto;
+      display: flex;
+      align-items: center;
       button {
         color: #fff;
         background: transparent !important;
         i {
           vertical-align: middle;
-          font-size: 18px;
+          font-size: 20px;
         }
-      }
-      .icon {
-        font-size: 26px !important;
-        cursor: pointer;
+
+        &.play {
+          border-radius: 999px;
+          border: 1px solid #fff;
+          padding: 8px;
+          margin: 0 8px;
+          i {
+            font-size: 20px !important;
+            cursor: pointer;
+          }
+        }
       }
     }
   }

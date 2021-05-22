@@ -3,6 +3,7 @@ import SidebarComponent from './default/sidebar.vue'
 import HeaderComponent from './default/header.vue'
 import QueuePlaylist from '@/components/queue-playlist.vue'
 import PlayerComponent from '@/components/player.vue'
+import KaraokeComponent from '@/components/karaoke.vue'
 import { onMounted } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 import { setTheme } from '@/helpers/dom'
@@ -12,6 +13,7 @@ export default {
     HeaderComponent,
     QueuePlaylist,
     PlayerComponent,
+    KaraokeComponent,
   },
   setup() {
     const store = useStore()
@@ -35,6 +37,7 @@ export default {
     </section>
     <queue-playlist />
     <player-component />
+    <karaoke-component/>
   </div>
 </template>
 

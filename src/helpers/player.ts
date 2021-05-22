@@ -1,4 +1,4 @@
-import { fetchStreaming } from '@/api'
+import { fetchPlaylist, fetchStreaming } from '@/api'
 import { Playlist, Song } from '@/types'
 import { Howl, Howler } from 'howler'
 import { cloneDeep, head, shuffle } from 'lodash-es'
@@ -28,6 +28,7 @@ class Player {
 
   private _reactivity = reactive({
     isPlaying: false,
+    isShowKaraoke: false
   })
 
   public currentSongId: string
@@ -219,6 +220,14 @@ class Player {
     return head(this.queues)
   }
 
+  get isShowKaraoke(): boolean {
+    return this._reactivity.isShowKaraoke
+  }
+
+  set isShowKaraoke(val: boolean) {
+    this._reactivity.isShowKaraoke = val
+  }
+
   handleOnend(): void {
     this.isPlaying = false
     if (this.repeat === Repeat.One) {
@@ -296,7 +305,11 @@ class Player {
       if (percent) {
         this._howler.seek((percent / 100) * this._howler.duration())
       } else {
-        return this._howler.seek() as number
+        try {
+          return this._howler.seek() as number
+        } catch {
+          return 0
+        }
       }
     }
   }
@@ -353,14 +366,23 @@ class Player {
   }
 
   playPlaylist(playlist = <Playlist>{}, isShuffle = false) {
+    if (playlist.encodeId === this.currentPlaylistId) {
+      return this.togglePlay()
+    }
     if (playlist.song && Array.isArray(playlist.song.items)) {
-      if (playlist.encodeId === this.currentPlaylistId) {
-        return this.togglePlay()
-      }
       const firstSong = playlist.song.items[0]
       if (firstSong) {
         this.playSong(firstSong, playlist, isShuffle)
       }
+    } else {
+      this.loadPlaylist(playlist)
+    }
+  }
+
+  async loadPlaylist(playlist: Playlist) {
+    const result: any = await fetchPlaylist(playlist.encodeId).catch(() => false)
+    if (result && result.data) {
+      this.playPlaylist(result.data)
     }
   }
 }

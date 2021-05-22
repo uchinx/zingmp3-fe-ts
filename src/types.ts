@@ -82,6 +82,7 @@ export interface UsePlayer {
   repeat: ComputedRef<string>
   volume: WritableComputedRef<number>
   isMuted: WritableComputedRef<boolean>
+  isShowKaraoke: WritableComputedRef<boolean>
   isPlaying: any
   isShowQueuePlaylist: any
   isShuffle: any
@@ -91,4 +92,13 @@ export interface UsePlayer {
   playPlaylist(playlist?: Playlist, isShuffle?: boolean): void
   togglePlay(): void
   toggleShuffle(): void
+}
+
+export interface Word {
+  data: string
+  startTime: number
+  endTime: number
+}
+export interface Sentence {
+  words: [Word]
 }

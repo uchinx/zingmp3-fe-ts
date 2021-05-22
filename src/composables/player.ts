@@ -20,6 +20,7 @@ export default function usePlayer(): UsePlayer {
     progress: player.writableComputed('progress'),
     isPlaying: player.writableComputed('isPlaying'),
     isShuffle: player.writableComputed('isShuffle'),
+    isShowKaraoke: player.writableComputed('isShowKaraoke'),
     isShowQueuePlaylist: player.writableComputed('isShowQueuePlaylist'),
     Player: player,
     playSong: player.playSong.bind(player),

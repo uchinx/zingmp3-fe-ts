@@ -23,3 +23,15 @@ export function fetchSong(id: string) {
     url: '/song/getDetail?id=' + id
   })
 }
+
+export function fetchKaraokeLyric(id: string) {
+  return request({
+    url: '/lyric?id=' + id
+  })
+}
+
+export function fetchLyric(link: string) {
+  return request({
+    url: link
+  })
+}
