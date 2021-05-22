@@ -74,21 +74,21 @@ export default {
           </div>
           <div class="info">
             <p>
-              {{ $t('updated_at') }}:
+              Cập nhật:
               {{ new Date(song.releaseDate * 1000).toLocaleDateString() }}
             </p>
-            <p>{{ song.like }} {{ $t('lover') }}</p>
+            <p>{{ song.like }} Người yêu thích</p>
           </div>
           <div class="md-action">
             <div class="action">
               <button class="btn zing" @click.stop="playSong(song, true)">
                 <div class="d-flex" v-if="isPlaying">
                   <i class="icon ic-pause"></i>
-                  <span>{{ $t('pause') }}</span>
+                  <span>Tạm dừng</span>
                 </div>
                 <div class="d-flex" v-else>
                   <i class="icon ic-play"></i>
-                  <span>{{ $t('play_random') }}</span>
+                  <span>Phát ngẫu nhiên</span>
                 </div>
               </button>
             </div>

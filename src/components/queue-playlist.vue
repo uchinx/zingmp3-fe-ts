@@ -71,14 +71,14 @@ export default {
             class="btn"
             :class="{ current: current === 'playing' }"
           >
-            {{ $t('playlist') }}
+            Danh sách phát
           </button>
           <button
             @click="current = 'listen_recently'"
             class="btn"
             :class="{ current: current === 'listen_recently' }"
           >
-            {{ $t('listen_recently') }}
+            Nghe gần đây
           </button>
         </div>
         <div class="others">
@@ -101,9 +101,9 @@ export default {
           ></queue-song>
         </div>
         <div class="next-up">
-          <div class="text-title">{{ $t('next_up') }}</div>
+          <div class="text-title">Tiếp theo</div>
           <div class="from" v-if="currentPlaylist">
-            {{ $t('from_playlist') }}
+            Từ danh sách phát
             <a href="#" class="text-primary">{{ currentPlaylist.title }}</a>
           </div>
           <div class="list">

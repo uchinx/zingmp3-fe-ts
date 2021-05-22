@@ -71,7 +71,7 @@ export default {
     <div class="search-bar">
       <div class="search">
         <i class="ic-search"></i>
-        <input type="text" :placeholder="$t('search')" />
+        <input type="text" placeholder="Nhập tên bài hát, nghệ sĩ hoặc MV" />
       </div>
     </div>
     <div class="left">

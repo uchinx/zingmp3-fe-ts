@@ -67,23 +67,23 @@ export default {
           </div>
           <div class="info">
             <p>
-              {{ $t('updated_at') }}:
+              Cập nhật:
               {{
                 new Date(album.contentLastUpdate * 1000).toLocaleDateString()
               }}
             </p>
-            <p>{{ album.like }} {{ $t('lover') }}</p>
+            <p>{{ album.like }} Người yêu thích</p>
           </div>
           <div class="md-action">
             <div class="action">
               <button class="btn zing" @click.stop="playPlaylist(album, true)">
                 <div class="d-flex" v-if="isPlaying">
                   <i class="icon ic-pause"></i>
-                  <span>{{ $t('pause') }}</span>
+                  <span>Tạm dừng</span>
                 </div>
                 <div class="d-flex" v-else>
                   <i class="icon ic-play"></i>
-                  <span>{{ $t('play_random') }}</span>
+                  <span>Phát ngẫu nhiên</span>
                 </div>
               </button>
             </div>
@@ -105,7 +105,7 @@ export default {
     <div class="album">
       <div class="description" v-if="album.description">
         <p>
-          <span class="text-secondary">{{ $t('quote') }}: </span>
+          <span class="text-secondary">Lời tựa: </span>
           <span>{{ album.description }}</span>
         </p>
       </div>

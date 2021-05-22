@@ -49,14 +49,14 @@ export default {
               class="btn"
               :class="{ current: tab === 'karaoke' }"
             >
-              {{ $t('karaoke') }}
+              Karaoke
             </button>
             <button
               @click="tab = 'lyric'"
               class="btn"
               :class="{ current: tab === 'lyric' }"
             >
-              {{ $t('lyric') }}
+              Lyric
             </button>
           </div>
         </div>
@@ -79,7 +79,12 @@ export default {
             :key="currentSongId"
             v-model:lyricUrl="lyricUrl"
           />
-          <lyric-component v-if="lyricUrl" :key="lyricUrl" v-show="tab === 'lyric'" :lyric-url="lyricUrl"/>
+          <lyric-component
+            v-if="lyricUrl"
+            :key="lyricUrl"
+            v-show="tab === 'lyric'"
+            :lyric-url="lyricUrl"
+          />
         </template>
       </div>
       <div class="bottom">
