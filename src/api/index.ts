@@ -14,7 +14,7 @@ export function fetchStreaming(id: string) {
 
 export function fetchHome(page = 1) {
   return request({
-    url: '/home?page' + page
+    url: '/home?page=' + page
   })
 }
 
