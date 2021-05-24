@@ -143,8 +143,8 @@ export default {
       margin: 0;
       border-radius: 10px;
       overflow: hidden;
-      width: 450px;
-      max-width: 450px;
+      width: 400px;
+      max-width: 400px;
       img {
         border-radius: 10px;
         overflow: hidden;
@@ -169,7 +169,7 @@ export default {
       width: 100%;
       height: 100%;
       .sentences {
-        max-height: 450px;
+        max-height: 400px;
         user-select: none;
         overflow-y: scroll;
         box-sizing: content-box;
@@ -202,7 +202,7 @@ export default {
     width: 100%;
     margin-top: 10px;
     .title {
-      font-size: 25px;
+      font-size: 20px;
       font-weight: bold;
     }
     .artists {
