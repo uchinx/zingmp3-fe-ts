@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const request = axios.create({
-  baseURL: 'https://mp3.uchin.dev/api',
+  baseURL: 'https://mp3.uchin.me/api',
 })
 
 request.interceptors.response.use(

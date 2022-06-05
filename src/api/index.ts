@@ -2,31 +2,31 @@ import request from '@/helpers/request'
 
 export function fetchPlaylist(id: string) {
   return request({
-    url: '/playlist/getDetail?id=' + id
+    url: '/page/get/playlist?id=' + id
   })
 }
 
 export function fetchStreaming(id: string) {
   return request({
-    url: '/song/getStreaming?id=' + id
+    url: '/song/get/streaming?id=' + id
   })
 }
 
 export function fetchHome(page = 1) {
   return request({
-    url: '/home?page=' + page
+    url: '/page/get/home?page=' + page
   })
 }
 
 export function fetchSong(id: string) {
   return request({
-    url: '/song/getDetail?id=' + id
+    url: '/page/get/song?id=' + id
   })
 }
 
 export function fetchKaraokeLyric(id: string) {
   return request({
-    url: '/lyric?id=' + id
+    url: '/lyric/get/lyric?id=' + id
   })
 }
 
